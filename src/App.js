@@ -1,22 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Layout from './components/Layout';
-import pic from './images/1.jpeg';
+import { BrowserRouter as Router } from 'react-router-dom';
+import Header from './Header';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import styles from './App.module.css';
+// import all images from the ./images folder
+// and save them to the images object
+const images = require.context('./images', true);
 
-function App() {
+const App = () => {
+  console.log(images)
   return (
-    <Layout sidebarSrc={pic} sidebarItems={['Home', 'About', 'Contact']}>
-      <div className="App">
-        <header className="App-header">
-          <img src={pic} className="App-logo" alt="logo" />
-          <p>
-            Suck my nuts!
-          </p>
-        </header>
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <div className={styles.mainContainer}>
+          <Sidebar />
+          <MainContent />
+        </div>
       </div>
-    </Layout>
+    </Router>
   );
-}
+};
 
 export default App;
+
+// Cee5f2
+// accbe1

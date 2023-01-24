@@ -1,0 +1,14 @@
+.mainContent {
+    width: calc(100% - 50px);
+    margin-left: 50px;
+    padding: 20px;
+  }
+  
+  /* Media query for responsiveness */
+  @media (max-width: 768px) {
+    .mainContent {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+  

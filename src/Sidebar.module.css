@@ -1,0 +1,26 @@
+.sidebar {
+    width: 50px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    box-shadow: 2px 0px 5px #ccc;
+  }
+  
+  .sidebarContent {
+    padding: 20px;
+  }
+  
+  /* Media query for responsiveness */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+      top: 0;
+      left: 0;
+      box-shadow: none;
+    }
+  }
+  
