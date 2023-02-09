@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import styles from "../styles/Chat.module.css";
 
@@ -9,26 +9,15 @@ const Chat = ({ endpoint }) => {
   const [memories, setMemories] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  console.log("TESTTTTT",process.env.REACT_APP_TEST);
-
   const handleChange = (event) => {
     setNewMessage(event.target.value);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios.get(endpoint);
-      setMessages(result.data.messages);
-      setInstructions(result.data.instructions);
-      setActions(result.data.actions);
-      setMemories(result.data.memories);
-    };
-    fetchData();
-  }, [endpoint]);
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setMessages(messages.concat("Julian: " + newMessage));
+    alert("Calling endpoint: " + endpoint)
+    return;
     const result = await axios.post(endpoint, {
       messages: messages,
     });
