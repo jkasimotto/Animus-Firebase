@@ -1,15 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import styles from "./Creation.module.css";
+import styles from "../styles/Creation.module.css";
 import ReactMarkdown from "react-markdown";
-import img from "./images/creation1.png";
-import articles from "./creations/articles.json";
+import articles from "../articles/articles.json";
 
 
 const Creation = () => {
   const { id } = useParams();
   const idNum = parseInt(id);
-  const images = require.context("./images", true);
+  const images = require.context("../images", true);
 
   // Get the creation from the JSON file
   const creation = articles.find((creation) => creation.id === idNum);

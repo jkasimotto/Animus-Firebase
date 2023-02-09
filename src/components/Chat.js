@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import styles from "../styles/Chat.module.css";
 
-const Chat = ({ endpoint }) => {
+const Chat = () => {
+  const endpoint = process.env.REACT_APP_ANIMUS_ENDPOINT;
   const [messages, setMessages] = useState([]);
   const [instructions, setInstructions] = useState([]);
   const [actions, setActions] = useState([]);

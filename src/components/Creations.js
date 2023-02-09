@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import styles from './Creations.module.css'
+import styles from '../styles/Creations.module.css'
 import { Link } from 'react-router-dom';
-import articles from './creations/articles.json';
-const images = require.context('./images', true);
+import articles from '../articles/articles.json';
+const images = require.context('../images', true);
 
 const Creations = () => {
   const [creations, setCreations] = useState(articles);

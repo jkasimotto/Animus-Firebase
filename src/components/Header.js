@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./Header.module.css";
+import styles from "../styles/Header.module.css";
 import { Link } from "react-router-dom";
 
 const Header = () => {
@@ -11,7 +11,7 @@ const Header = () => {
     // Get a random number between 1 and 10
     const randomNum = Math.floor(Math.random() * 10) + 1;
     // Import "randomnumber.jpeg" from the images folder
-    const randomImg = require(`./images/${randomNum}.jpeg`);
+    const randomImg = require(`../images/${randomNum}.jpeg`);
     // Set the image source to the random image
     setImageUrl(randomImg);
   };
@@ -46,7 +46,7 @@ const getRandomImage = () => {
   // Get a random number between 1 and 10
   const randomNum = Math.floor(Math.random() * 10) + 1;
   // Import "randomnumber.jpeg" from the images folder
-  const randomImg = require(`./images/${randomNum}.jpeg`);
+  const randomImg = require(`../images/${randomNum}.jpeg`);
   // Set the image source to the random image
   return randomImg;
 };
