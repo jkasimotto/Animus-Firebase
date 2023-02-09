@@ -1,0 +1,9 @@
+:root {
+    --circular-image-max-size: 150px;
+    --circular-image-min-size: 20vw;
+    --circular-image-size: min(var(--circular-image-min-size), var(--circular-image-max-size));
+    --circular-image-padding: 10px;
+    --sidebar-width: 0px;
+    --sidebar-height: calc(100vh - var(--circular-image-size) - 20px);
+  }
+  

@@ -1,9 +1,15 @@
+@import "./variables.module.css";
+
 .app {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .mainContainer {
-  display: flex;
   align-items: stretch;
+  flex: 1;
+  display: flex;
 }

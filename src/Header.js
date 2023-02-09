@@ -4,15 +4,16 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
 
-  const [imageUrl, setImageUrl] = useState("./images/1.jpeg");
+  const [imageUrl, setImageUrl] = useState(getRandomImage());
 
   // function to handle the click on circular image
   const handleImageClick = () => {
-    // select a random image from src/images folder
-    // const imageKeys = images.keys();
-    // const randomImageKey = imageKeys[Math.floor(Math.random() * imageKeys.length)];
-    // const imagePath = images(randomImageKey);
-    // setImageUrl(imagePath);
+    // Get a random number between 1 and 10
+    const randomNum = Math.floor(Math.random() * 10) + 1;
+    // Import "randomnumber.jpeg" from the images folder
+    const randomImg = require(`./images/${randomNum}.jpeg`);
+    // Set the image source to the random image
+    setImageUrl(randomImg);
   };
 
   return (
@@ -27,17 +28,28 @@ const Header = () => {
       </div>
       <nav className={styles.nav}>
         <Link to="/" className={styles.navLink}>
-          Home
-        </Link>
-        <Link to="/about" className={styles.navLink}>
-          About
+          About 
         </Link>
         <Link to="/articles" className={styles.navLink}>
           Articles
+        </Link>
+        <Link to="/chat" className={styles.navLink}>
+          Chat
         </Link>
       </nav>
     </header>
   );
 };
 
+// Function to get random image
+const getRandomImage = () => {
+  // Get a random number between 1 and 10
+  const randomNum = Math.floor(Math.random() * 10) + 1;
+  // Import "randomnumber.jpeg" from the images folder
+  const randomImg = require(`./images/${randomNum}.jpeg`);
+  // Set the image source to the random image
+  return randomImg;
+};
+
 export default Header;
+

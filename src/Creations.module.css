@@ -1,0 +1,28 @@
+.creationsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 1%;
+    justify-content: center;
+}
+
+.creationsContainerUL {
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.creationCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    text-align: center;
+    margin: 10px;
+}
+
+.thumbnail {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}

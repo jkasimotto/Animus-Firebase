@@ -1,16 +1,20 @@
+@import './variables.module.css';
+
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  background: #cee5f2;
 }
 
 .circularImageContainer {
-  width: 50px;
-  height: 50px;
+  width: var(--circular-image-size);
+  height: var(--circular-image-size);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--circular-image-padding);
 }
 
 .circularImage {
@@ -23,9 +27,11 @@
 .nav {
   display: flex;
   align-items: center;
+  padding-left: 10px;
 }
 
 .navLink {
+  margin-left: 10px;
   margin-right: 10px;
   text-decoration: none;
   color: #000;
