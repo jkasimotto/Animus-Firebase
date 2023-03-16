@@ -1,27 +1,37 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Switch } from 'react-router';
-import Header from './components/Header';
-import MainContent from './components/MainContent';
-import Creations from './components/Creations';
-import Creation from './components/Creation';
-import styles from './styles/App.module.css';
+import React, { useEffect } from "react";
+import { BrowserRouter } from "react-router-dom";
+import Header from "./components/Header";
+import MainContent from "./components/MainContent";
+import styles from "./styles/App.module.css";
+import Box from "@mui/material/Box";
+import { initFirebaseAuth, AuthProvider } from "./auth/auth";
 // import all images from the ./images folder
 // and save them to the images object
-const images = require.context('./images', true);
+const images = require.context("./images", true);
+
+initFirebaseAuth();
 
 const App = () => {
   return (
     <BrowserRouter>
-      <div className={styles.app}>
-        <Header />
-        <div className={styles.mainContainer}>
-          <MainContent />
+      <AuthProvider>
+        <div className={styles.app}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <Header />
+            <div className={styles.mainContainer}>
+              <MainContent />
+            </div>
+          </Box>
         </div>
-      </div>
+      </AuthProvider>
     </BrowserRouter>
   );
-
 };
 
 export default App;

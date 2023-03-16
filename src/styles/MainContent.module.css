@@ -3,6 +3,9 @@
 .mainContent {
     width: calc(100% - var(--sidebar-width));
     background:#accbe1;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
   
   /* Media query for responsiveness */
@@ -10,6 +13,9 @@
     .mainContent {
       width: 100%;
       margin-left: 0;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
     }
   }
   

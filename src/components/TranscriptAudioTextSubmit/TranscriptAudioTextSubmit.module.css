@@ -1,0 +1,26 @@
+.container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+  }
+  
+  .textarea {
+    margin-bottom: 16px;
+    height: auto;
+    min-height: 100px;
+  }
+  
+  .submit-button {
+    margin-right: 8px;
+    height: 36px;
+    min-width: 0;
+    padding: 6px 12px;
+  }
+  
+  .record-button {
+    height: 100%;
+  }
+  

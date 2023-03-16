@@ -2,7 +2,6 @@
     {
         "id": 1,
         "title": "Colouring books of my dogs",
-        "thumbnail": "./creation1.png",
-        "markdown": "# Hello!\nThis is my first article.\nI wrote it in Markdown and rendered it using ReactMarkdown.\nIt includes an image to a dog ![Dog Image](./creation1.png) and a second image ![Second dog image](./creation2.png)\n "
+        "thumbnail": "./creation4.png"
     }
 ]

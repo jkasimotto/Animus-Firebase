@@ -1,0 +1,25 @@
+.transcript {
+    cursor: pointer;
+    border: 1px solid #eaeaea;
+    padding: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .transcript p {
+    margin: 0;
+  }
+  
+  .transcript button {
+    margin-left: 8px;
+    background-color: #eaeaea;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 4px;
+  }
+  
+  .transcript button:hover {
+    background-color: #d5d5d5;
+  }
+  

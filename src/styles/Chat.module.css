@@ -1,6 +1,5 @@
 .chat-container {
   width: 100%;
-  max-width: 60%;
   margin: 0 auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -9,6 +8,9 @@
 
 @media (min-width: 768px) {
   .chat-container {
+    max-width: 60%;
+  }
+  .form {
     max-width: 60%;
   }
 }
@@ -38,7 +40,6 @@ form {
   position: fixed;
   bottom: 10px;
   width: 100%;
-  max-width: 60%;
 }
 
 .chat-input {
@@ -56,6 +57,5 @@ button[type="submit"] {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #fff;
-  margin-left: 10px;
   cursor: pointer;
 }
