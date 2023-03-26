@@ -35,9 +35,13 @@
     "storage": {
       "port": 9199
     },
+    "firestore": {
+      "port": 8080
+    },
     "ui": {
       "enabled": true
     },
+    "exportOnExit": "emulator_data",
     "singleProjectMode": true
   },
   "firestore": {

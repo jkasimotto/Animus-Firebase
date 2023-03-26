@@ -3,6 +3,7 @@ import List from "@mui/material/List";
 import Transcript from "../Transcript/Transcript";
 
 const TranscriptList = ({ transcripts, onTranscriptClick, onDelete, onShare, onClose, isOpen, anchor, transformOrigin, anchorOrigin, PaperProps }) => {
+  console.log("TranscriptList: ", transcripts)
   return (
     <List
     sx={{

@@ -1,16 +1,24 @@
+import { ref, getDownloadURL } from "firebase/storage";
 import React, { useState, useEffect } from "react";
 import { Container, Box, Grid, Typography } from "@mui/material";
 import TranscriptHeader from "../TranscriptHeader/TranscriptHeader";
 import TranscriptList from "../TranscriptList/TranscriptList";
-import { db } from "../../firebase";
+import { db, storage } from "../../firebase";
 import { AuthContext } from "../../auth/auth";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+  orderBy,
+} from "firebase/firestore";
 import TranscriptAudioTextSubmit from "../TranscriptAudioTextSubmit/TranscriptAudioTextSubmit";
 
 const TranscriptPage = () => {
   const { user } = React.useContext(AuthContext);
-  const [transcripts, setTranscripts] = useState([]);
-  const [selectedTranscripts, setSelectedTranscripts] = useState([]);
+  const [documents, setDocuments] = useState([]);
+  const [selectedDocuments, setSelectedDocuments] = useState([])
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [minDate, setMinDate] = useState(null);
@@ -27,57 +35,52 @@ const TranscriptPage = () => {
     console.log("User logged in. Fetching transcripts...");
 
     // Create the query for audio documents where uid matches user.uid
-    const audioQuery = query(
-      collection(db, "audio"),
-      where("uid", "==", user.uid)
-    );
+    const documentsRef = collection(db, "users", user.uid, "files");
+    const documentsQuery = query(documentsRef, orderBy("createdAt", "desc"));
 
-    // Fetch transcripts from Firestore or API
-    const fetchTranscripts = async () => {
-      const transcriptsData = [];
-      const transcriptsSnapshot = await getDocs(audioQuery);
-      transcriptsSnapshot.forEach((doc) => {
-        const transcript = doc.data();
-        transcriptsData.push(transcript);
-      });
-      setTranscripts(transcriptsData);
-      setSelectedTranscripts(transcriptsData);
-      const latestDate = transcriptsData.reduce(
-        (latest, transcript) =>
-          transcript.createdAt > latest ? transcript.createdAt : latest,
-        new Date("1900-01-01T00:00:00")
-      );
-      setSelectedDate(latestDate);
-      const earliestDate = transcriptsData.reduce(
-        (earliest, transcript) =>
-          transcript.createdAt < earliest ? transcript.createdAt : earliest,
-        new Date("2100-01-01T00:00:00")
-      );
-      setMinDate(earliestDate);
-      setMaxDate(latestDate);
+    // Set up a listener for real-time updates in Firestore
+    const unsubscribe = onSnapshot(documentsQuery, async (snapshot) => {
+      const changes = snapshot.docChanges();
+      for (const change of changes) {
+        if (change.type === 'added') {
+          const doc = change.doc;
+          const storageUrl = doc.data().storageUrl;
+          const textFile = await downloadTranscription(user.uid, doc.data().fileId);
+          const newDoc = {
+            id: doc.id,
+            ...doc.data(),
+            transcription: textFile,
+          };
+          setDocuments((prevState) => [newDoc, ...prevState]);
+          setSelectedDocuments((prevState) => [newDoc, ...prevState]);
+        }
+      }
+    });
+
+    // Clean up the listener when the component is unmounted
+    return () => {
+      unsubscribe();
     };
-
-    fetchTranscripts();
   }, [user]);
 
   const handleTranscriptClick = (transcript) => {
-    const index = selectedTranscripts.findIndex((t) => t === transcript);
+    const index = selectedDocuments.findIndex((t) => t === transcript);
     if (index === -1) {
-      setSelectedTranscripts([...selectedTranscripts, transcript]);
+      setSelectedDocuments([...selectedDocuments, transcript]);
     } else {
-      setSelectedTranscripts([
-        ...selectedTranscripts.slice(0, index),
-        ...selectedTranscripts.slice(index + 1),
+      setSelectedDocuments([
+        ...selectedDocuments.slice(0, index),
+        ...selectedDocuments.slice(index + 1),
       ]);
     }
   };
 
   const handleSearchTermChange = (event) => {
     setSearchTerm(event.target.value);
-    const filteredTranscripts = transcripts.filter((transcript) =>
+    const filteredDocuments = documents.filter((transcript) =>
       transcript.title.toLowerCase().includes(event.target.value.toLowerCase())
     );
-    setSelectedTranscripts(filteredTranscripts);
+    setSelectedDocuments(filteredDocuments);
   };
 
   const handleTimelineChange = (event, value) => {
@@ -85,21 +88,22 @@ const TranscriptPage = () => {
   };
 
   return (
-    <Container 
-    sx={{
-      display: 'flex',
-      flexGrow: 1,
-    }}
-    maxWidth="lg">
-      <Box 
-      py={4}
+    <Container
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1, // Allow the Box to grow to fill the parent container
-        // minHeight: '100vh', // Set to the full height of the viewport
-        position: 'relative', // Set the position property for correct positioning of children
+        display: "flex",
+        flexGrow: 1,
       }}
+      maxWidth="lg"
+    >
+      <Box
+        py={4}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1, // Allow the Box to grow to fill the parent container
+          // minHeight: '100vh', // Set to the full height of the viewport
+          position: "relative", // Set the position property for correct positioning of children
+        }}
       >
         <Grid container spacing={4}>
           <Grid item xs={12}>
@@ -113,10 +117,20 @@ const TranscriptPage = () => {
             />
           </Grid>
           <Grid item xs={12}>
+            <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "1rem",
+              overflow:"scroll"
+            }}
+          >
             <TranscriptList
-              transcripts={selectedTranscripts}
+              transcripts={selectedDocuments}
               onTranscriptClick={handleTranscriptClick}
             />
+            </div>
           </Grid>
         </Grid>
         <TranscriptAudioTextSubmit />
@@ -126,3 +140,20 @@ const TranscriptPage = () => {
 };
 
 export default TranscriptPage;
+
+async function downloadTranscription(userId, fileId) {
+  const fileRef = ref(
+    storage,
+    `user-transcripts/${userId}/${fileId}/transcript`
+  );
+
+  try {
+    const url = await getDownloadURL(fileRef);
+    const response = await fetch(url);
+    const transcription = await response.text();
+    return transcription;
+  } catch (error) {
+    console.error("Error downloading transcription:", error);
+    throw error;
+  }
+}

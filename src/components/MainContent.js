@@ -5,7 +5,6 @@ import ArticlesPage from "./ArticlesPage";
 import Article from "./Article";
 import Chat from "./Chat";
 import styles from "../styles/MainContent.module.css";
-import ExamplePage from "./TranscriptPage";
 import TranscriptPage from "./TranscriptPage/TranscriptPage";
 
 
