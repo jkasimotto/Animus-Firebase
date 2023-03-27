@@ -14,25 +14,53 @@ module.exports = functions.https.onRequest(async (req, res) => {
 });
 
 async function onDriveNotification(req, res) {
-  // Call the functions in the correct order
+  // 1. Validate request headers
   if (!validateHeaders(req, res)) return;
+
+  // 2. Log headers and notification data
   logHeadersAndNotification(req);
+
+  // 3. Retrieve the Google Drive channel document
   const channelId = req.get("X-Goog-Channel-ID");
   const channelDoc = await getChannelDoc(channelId);
   const channelData = channelDoc.data();
+
+  // 4. Extract user ID and refresh token
   const uid = channelData.uid;
   const { _, refreshToken } = await getUserTokens(uid);
+
+  // 5. Initialize Google Drive API client
   const drive = await getDriveApiClient(refreshToken);
+
+  // 6. Fetch Google Drive files
   const files = await getDriveFiles(
     drive,
     channelData.fileId,
     channelData.lastNotification
   );
+
+  // 7. Log number of files found
   functions.logger.info(`${files.length} files found`);
-  await batchWriteFileDocuments(files, uid);
+
+  // 8. Extract timestamps from filenames and handle erroneous filenames
+  const filesWithTimestamps = files.map((file) => {
+    const { timestamp, timestampError } = extractTimestampFromFilename(
+      file.name
+    );
+    functions.logger.info(`Timestamp: ${timestamp}`);
+    functions.logger.info(`Timestamp error: ${timestampError}`);
+    return { ...file, timestamp, timestampError };
+  });
+
+  // 9. Write file documents to the database
+  await batchWriteFileDocuments(filesWithTimestamps, uid);
+
+  // 10. Update channel's last notification timestamp (if in production environment)
   if (process.env.ENVIRONMENT === "production") {
     await updateChannelLastNotification(channelId);
   }
+
+  // 11. Send a 200 OK response
   res.status(200).send("OK");
 }
 
@@ -105,4 +133,40 @@ function logHeadersAndNotification(req) {
   functions.logger.info(`Message Number: ${messageNumber}`);
   functions.logger.info(`Resource ID: ${resourceId}`);
   functions.logger.info(`Resource URI: ${resourceUri}`);
+}
+
+function extractTimestampFromFilename(filename) {
+  const timestampRegex = /\w+ \d+_\w{1}_\d{8}_\d{6}\.\w{3}/;
+  functions.logger.info(`Filename: ${filename}`);
+  functions.logger.info(`Filename length: ${filename.length}`);
+  functions.logger.info(`Filename matches expected format: ${timestampRegex.test(filename)}`);
+
+  // Check if the filename matches the expected format
+  if (timestampRegex.test(filename)) {
+    const datePart = filename.slice(13, 21);
+    const timePart = filename.slice(22, 28);
+    const year = datePart.slice(0, 4);
+    const month = datePart.slice(4, 6);
+    const day = datePart.slice(6, 8);
+    const hour = timePart.slice(0, 2);
+    const minute = timePart.slice(2, 4);
+    const second = timePart.slice(4, 6);
+
+    functions.logger.info(`Extracted timestamp from filename: ${filename}`);
+    functions.logger.info(`Timestamp: ${year}-${month}-${day} ${hour}:${minute}:${second}`);
+
+    // Extract the timestamp from the filename
+    const timestamp = new Date(
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute),
+      parseInt(second)
+    );
+
+    return { timestamp, timestampError: false };
+  } else {
+    return { timestamp: null, timestampError: true };
+  }
 }
