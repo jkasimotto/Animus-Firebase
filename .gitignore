@@ -64,3 +64,4 @@ build/
 
 # .env files
 .env
+.env.production

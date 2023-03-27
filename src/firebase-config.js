@@ -1,11 +1,11 @@
 // Your web app's FirebasOe configuration
-const config = {
-  apiKey: "AIzaSyB6gRs9P0B-pO12zpupaR81BsewT4kk9LM",
-  authDomain: "website-f126b.firebaseapp.com",
-  projectId: "website-f126b",
-  storageBucket: "website-f126b.appspot.com",
-  messagingSenderId: "476897576252",
-  appId: "1:476897576252:web:b81a6c0c3a80f30b808a39",
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
 };
 
 export function getFirebaseConfig() {
