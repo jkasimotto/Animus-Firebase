@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   List,
   ListItem,
@@ -10,17 +10,32 @@ import {
 } from "@mui/material";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 
 const DocumentList = ({ documents }) => {
+  const [audio, setAudio] = useState(null);
+
   const formatDate = (timestamp) => {
-    const date = new Date(timestamp.seconds * 1000); // Firestore timestamps are in seconds, so multiply by 1000 to get milliseconds
-    const dateString = date.toLocaleString(); // Uses the user's local time by default
+    const date = new Date(timestamp.seconds * 1000);
+    const dateString = date.toLocaleString('en-AU');
     return dateString;
   };
 
   const playAudio = (audioUrl) => {
-    const audio = new Audio(audioUrl);
-    audio.play();
+    if (audio && audio.src === audioUrl[0]) {
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    } else {
+      if (audio) {
+        audio.pause();
+      }
+      const newAudio = new Audio(audioUrl);
+      newAudio.play();
+      setAudio(newAudio);
+    }
   };
 
   const sortedDocuments = documents.sort(
@@ -40,13 +55,17 @@ const DocumentList = ({ documents }) => {
             primary={document.text}
             secondary={formatDate(document.timestamp)}
           />
-          {document.audioUrl && (
+          {document.fileType === "audio" && document.storageUrl && (
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"
-                onClick={() => playAudio(document.audioUrl)}
+                onClick={() => playAudio(document.storageUrl)}
               >
-                <PlayArrowIcon />
+                {audio && audio.src === document.storageUrl[0] && !audio.paused ? (
+                  <PauseIcon />
+                ) : (
+                  <PlayArrowIcon />
+                )}
               </IconButton>
             </ListItemSecondaryAction>
           )}
