@@ -6,8 +6,9 @@ const { uploadTranscription } = require("../storage/upload");
 const { transcribeAudio } = require("../utils/transcription");
 const { updateFileDocument } = require("../firestore/files");
 
-module.exports = functions.firestore
-  .document("users/{userId}/files/{fileId}")
+module.exports = functions
+  .runWith({ secrets: ["OPENAI_API_KEY"] })
+  .firestore.document("users/{userId}/files/{fileId}")
   .onUpdate(async (change, context) => {
     await onStorageUrlChange(change, context);
   });

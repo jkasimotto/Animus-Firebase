@@ -136,7 +136,7 @@ function logHeadersAndNotification(req) {
 }
 
 function extractTimestampFromFilename(filename) {
-  const timestampRegex = /\w+ \d+_\w{1}_\d{8}_\d{6}\.\w{3}/;
+  const timestampRegex = /\w+ \d+_W_\d{8}_\d{6}\.\w{3}/;
   functions.logger.info(`Filename: ${filename}`);
   functions.logger.info(`Filename length: ${filename.length}`);
   functions.logger.info(`Filename matches expected format: ${timestampRegex.test(filename)}`);
