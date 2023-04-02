@@ -1,7 +1,15 @@
-import React from 'react';
-import { List, ListItem, ListItemText, ListItemAvatar, Avatar, ListItemSecondaryAction, IconButton } from '@mui/material';
-import AudiotrackIcon from '@mui/icons-material/Audiotrack';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import React from "react";
+import {
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
+  ListItemSecondaryAction,
+  IconButton,
+} from "@mui/material";
+import AudiotrackIcon from "@mui/icons-material/Audiotrack";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 const DocumentList = ({ documents }) => {
   const formatDate = (timestamp) => {
@@ -16,19 +24,29 @@ const DocumentList = ({ documents }) => {
     audio.play();
   };
 
+  const sortedDocuments = documents.sort(
+    (a, b) => b.timestamp.seconds - a.timestamp.seconds
+  );
+
   return (
     <List>
-      {documents.map((document, index) => (
+      {sortedDocuments.map((document, index) => (
         <ListItem key={index}>
           <ListItemAvatar>
             <Avatar>
               <AudiotrackIcon />
             </Avatar>
           </ListItemAvatar>
-          <ListItemText primary={document.text} secondary={formatDate(document.timestamp)} />
+          <ListItemText
+            primary={document.text}
+            secondary={formatDate(document.timestamp)}
+          />
           {document.audioUrl && (
             <ListItemSecondaryAction>
-              <IconButton edge="end" onClick={() => playAudio(document.audioUrl)}>
+              <IconButton
+                edge="end"
+                onClick={() => playAudio(document.audioUrl)}
+              >
                 <PlayArrowIcon />
               </IconButton>
             </ListItemSecondaryAction>
