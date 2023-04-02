@@ -14,8 +14,8 @@ const storage = getStorage(app);
 const db = getFirestore(app);
 const functions = getFunctions(app);
 
-connectFirestoreEmulator(db, "localhost", 8080);
-connectStorageEmulator(storage, "localhost", 9199);
+// connectFirestoreEmulator(db, "localhost", 8080);
+// connectStorageEmulator(storage, "localhost", 9199);
 
 export { app, storage, db, functions };
 export default app;

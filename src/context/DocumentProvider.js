@@ -33,13 +33,19 @@ export const DocumentsProvider = ({ children }) => {
       for (const change of changes) {
         if (change.type === 'added') {
           const doc = change.doc;
-          const textFile = await downloadTranscription(user.uid, doc.data().fileId);
-          const newDoc = {
-            id: doc.id,
-            ...doc.data(),
-            transcription: textFile,
-          };
-          setDocuments((prevState) => [newDoc, ...prevState]);
+          const docData = doc.data();
+          try {
+            const textFile = await downloadTranscription(user.uid, doc.data().fileId);
+            const newDoc = {
+              id: doc.id,
+              ...doc.data(),
+              transcription: textFile,
+              timestamp: docData.fileCreationTimestamp
+            };
+            setDocuments((prevState) => [newDoc, ...prevState]);
+          } catch (error) {
+            console.error("Error downloading transcription:", error);
+          }
         }
       }
     });
@@ -61,6 +67,8 @@ async function downloadTranscription(userId, fileId) {
     storage,
     `user-transcripts/${userId}/${fileId}/transcript`
   );
+
+  console.log("Downloading transcription from:", fileRef.fullPath);
 
   try {
     const url = await getDownloadURL(fileRef);
