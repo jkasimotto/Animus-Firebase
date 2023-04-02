@@ -15,7 +15,6 @@ const DocumentList = ({ documents }) => {
   const formatDate = (timestamp) => {
     const date = new Date(timestamp.seconds * 1000); // Firestore timestamps are in seconds, so multiply by 1000 to get milliseconds
     const dateString = date.toLocaleString(); // Uses the user's local time by default
-    console.log(dateString); // Output will vary based on user's locale
     return dateString;
   };
 

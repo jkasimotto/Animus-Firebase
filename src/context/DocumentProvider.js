@@ -39,7 +39,7 @@ export const DocumentsProvider = ({ children }) => {
             const newDoc = {
               id: doc.id,
               ...doc.data(),
-              transcription: textFile,
+              text: textFile,
               timestamp: docData.fileCreationTimestamp
             };
             setDocuments((prevState) => [newDoc, ...prevState]);
