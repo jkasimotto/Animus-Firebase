@@ -8,6 +8,7 @@ const functions = require("firebase-functions");
 const { batchWriteFileDocuments } = require("../firestore/files");
 const { getChannelDoc } = require("../firestore/channels");
 const { getUserTokens } = require("../firestore/users");
+const { extractTimestampFromFilename } = require("../utils/filename");
 
 module.exports = functions.https.onRequest(async (req, res) => {
   await onDriveNotification(req, res);
@@ -133,40 +134,4 @@ function logHeadersAndNotification(req) {
   functions.logger.info(`Message Number: ${messageNumber}`);
   functions.logger.info(`Resource ID: ${resourceId}`);
   functions.logger.info(`Resource URI: ${resourceUri}`);
-}
-
-function extractTimestampFromFilename(filename) {
-  const timestampRegex = /\w+ \d+_W_\d{8}_\d{6}\.\w{3}/;
-  functions.logger.info(`Filename: ${filename}`);
-  functions.logger.info(`Filename length: ${filename.length}`);
-  functions.logger.info(`Filename matches expected format: ${timestampRegex.test(filename)}`);
-
-  // Check if the filename matches the expected format
-  if (timestampRegex.test(filename)) {
-    const datePart = filename.slice(13, 21);
-    const timePart = filename.slice(22, 28);
-    const year = datePart.slice(0, 4);
-    const month = datePart.slice(4, 6);
-    const day = datePart.slice(6, 8);
-    const hour = timePart.slice(0, 2);
-    const minute = timePart.slice(2, 4);
-    const second = timePart.slice(4, 6);
-
-    functions.logger.info(`Extracted timestamp from filename: ${filename}`);
-    functions.logger.info(`Timestamp: ${year}-${month}-${day} ${hour}:${minute}:${second}`);
-
-    // Extract the timestamp from the filename
-    const timestamp = new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day),
-      parseInt(hour),
-      parseInt(minute),
-      parseInt(second)
-    );
-
-    return { timestamp, timestampError: false };
-  } else {
-    return { timestamp: null, timestampError: true };
-  }
 }
