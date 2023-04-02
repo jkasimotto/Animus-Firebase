@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
+const { format, utcToZonedTime } = require("date-fns-tz");
 
-function extractTimestampFromFilename(filename) {
+function extractTimestampFromFilename(filename, timezone) {
   const timestampRegex = /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/;
   functions.logger.info(`Filename: ${filename}`);
   functions.logger.info(`Filename length: ${filename.length}`);
@@ -12,7 +13,7 @@ function extractTimestampFromFilename(filename) {
   const match = filename.match(timestampRegex);
   if (match) {
     const [, year, month, day, hour, minute, second] = match;
-    const timestamp = new Date(
+    const localTimestamp = new Date(
       parseInt(year, 10),
       parseInt(month, 10) - 1, // JavaScript Date object uses zero-based month indexing
       parseInt(day, 10),
@@ -22,9 +23,9 @@ function extractTimestampFromFilename(filename) {
     );
 
     functions.logger.info(`Extracted timestamp from filename: ${filename}`);
-    functions.logger.info(`Timestamp: ${timestamp}`);
+    functions.logger.info(`Timestamp: ${localTimestamp}`);
 
-    return { timestamp, timestampError: false };
+    return { timestamp: localTimestamp, timestampError: false };
   } else {
     return { timestamp: null, timestampError: true };
   }

@@ -15,6 +15,7 @@
   "main": "src/index.js",
   "dependencies": {
     "axios": "^0.24.0",
+    "date-fns-tz": "^2.0.0",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^4.2.1",
     "form-data": "^4.0.0",
