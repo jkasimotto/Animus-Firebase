@@ -22,9 +22,7 @@ function extractTimestampFromFilename(filename) {
     );
 
     functions.logger.info(`Extracted timestamp from filename: ${filename}`);
-    functions.logger.info(
-      `Timestamp: ${timestamp}`
-    );
+    functions.logger.info(`Timestamp: ${timestamp}`);
 
     return { timestamp, timestampError: false };
   } else {
