@@ -29,7 +29,6 @@ async function onDriveNotification(req, res) {
   // 4. Extract user ID and refresh token
   const uid = channelData.uid;
   const { _, refreshToken } = await getUserTokens(uid);
-  const userTimezone = db.collection("users").doc(uid).get().data().timezone;
 
   // 5. Initialize Google Drive API client
   const drive = await getDriveApiClient(refreshToken);
@@ -47,7 +46,7 @@ async function onDriveNotification(req, res) {
   // 8. Extract timestamps from filenames and handle erroneous filenames
   const filesWithTimestamps = files.map((file) => {
     const { timestamp, timestampError } = extractTimestampFromFilename(
-      file.name, userTimezone
+      file.name
     );
     functions.logger.info(`Timestamp: ${timestamp}`);
     functions.logger.info(`Timestamp error: ${timestampError}`);

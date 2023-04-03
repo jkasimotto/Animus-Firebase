@@ -1,7 +1,7 @@
 const functions = require("firebase-functions");
 const { format, utcToZonedTime } = require("date-fns-tz");
 
-function extractTimestampFromFilename(filename, timezone) {
+function extractTimestampFromFilename(filename) {
   const timestampRegex = /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/;
   functions.logger.info(`Filename: ${filename}`);
   functions.logger.info(`Filename length: ${filename.length}`);
