@@ -65,3 +65,8 @@ build/
 # .env files
 .env
 .env.production
+.env.development
+.env*
+
+# local
+local/

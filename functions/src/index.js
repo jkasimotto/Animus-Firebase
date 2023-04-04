@@ -12,9 +12,11 @@ admin.initializeApp({
 const onDriveNotification = require("./functions/onDriveNotification");
 const onNewFileInFirestore = require("./functions/onNewFileInFirestore");
 const onStorageUrlUpdate = require("./functions/onStorageUrlChange");
+const syncDriveFolder = require("./functions/syncDriveFolder");
 
 
 // exports.createDriveWatchChannel = createDriveWatchChannel;
 exports.onDriveNotification = onDriveNotification;
 exports.onNewFileInFirestore = onNewFileInFirestore;
 exports.onStorageUrlUpdate = onStorageUrlUpdate;
+exports.syncDriveFolder = syncDriveFolder;

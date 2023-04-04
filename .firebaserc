@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "website-f126b"
-  }
+    "default": "website-f126b",
+    "development": "animus-development",
+    "production": "website-f126b"
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -6,17 +6,18 @@ import {
   query,
   onSnapshot,
   orderBy,
+  limit,
 } from "firebase/firestore";
-import {
-  ref,
-  getDownloadURL,
-} from "firebase/storage";
+import { ref, getDownloadURL } from "firebase/storage";
+import { retry } from "../utils";
 
 export const DocumentsContext = createContext();
 
 export const DocumentsProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [documents, setDocuments] = useState([]);
+  console.log("ENVIROMENT", process.env.REACT_APP_ENVIRONMENT);
+  console.log("ROJECT ID", process.env.REACT_APP_PROJECT_ID);
 
   useEffect(() => {
     if (!user) {
@@ -25,29 +26,11 @@ export const DocumentsProvider = ({ children }) => {
     }
     console.log("User logged in. Fetching transcripts...");
 
-    const documentsRef = collection(db, "users", user.uid, "files");
-    const documentsQuery = query(documentsRef, orderBy("createdAt", "desc"));
+    const documentsQuery = buildDocumentsQuery(user.uid);
 
     const unsubscribe = onSnapshot(documentsQuery, async (snapshot) => {
       const changes = snapshot.docChanges();
-      for (const change of changes) {
-        if (change.type === 'added') {
-          const doc = change.doc;
-          const docData = doc.data();
-          try {
-            const textFile = await downloadTranscription(user.uid, doc.data().fileId);
-            const newDoc = {
-              id: doc.id,
-              ...doc.data(),
-              text: textFile,
-              timestamp: docData.fileCreationTimestamp
-            };
-            setDocuments((prevState) => [newDoc, ...prevState]);
-          } catch (error) {
-            console.error("Error downloading transcription:", error);
-          }
-        }
-      }
+      await handleDocumentChanges(user.uid, changes, setDocuments);
     });
 
     return () => {
@@ -62,7 +45,64 @@ export const DocumentsProvider = ({ children }) => {
   );
 };
 
+function buildDocumentsQuery(userId) {
+  const documentsRef = collection(db, "users", userId, "files");
+  return query(documentsRef, orderBy("fileCreationTimestamp", "desc"), limit(20));
+}
+
+async function handleDocumentChanges(userId, changes, setDocuments) {
+  for (const change of changes) {
+    if (change.type === "added" || change.type === "modified") {
+      const doc = change.doc;
+      const newDoc = await buildDocumentObject(userId, doc);
+      updateDocumentsState(newDoc, change.type, setDocuments);
+    }
+  }
+}
+
+async function buildDocumentObject(userId, doc) {
+  const docData = doc.data();
+  let newDoc;
+  try {
+    const textFile = await downloadTranscription(userId, docData.fileId);
+    newDoc = {
+      id: doc.id,
+      ...docData,
+      text: textFile,
+      timestamp: docData.fileCreationTimestamp,
+    };
+  } catch (error) {
+    console.error("Error downloading transcription:", error);
+    newDoc = {
+      id: doc.id,
+      ...docData,
+      text: null,
+      timestamp: docData.fileCreationTimestamp,
+    };
+  }
+  return newDoc;
+}
+
+function updateDocumentsState(newDoc, changeType, setDocuments) {
+  if (changeType === "added") {
+    setDocuments((prevState) => [newDoc, ...prevState]);
+  } else if (changeType === "modified") {
+    console.log("Modified document:", newDoc);
+    setDocuments((prevState) =>
+      prevState.map((d) => (d.id === newDoc.id ? newDoc : d))
+    );
+  }
+}
+
 async function downloadTranscription(userId, fileId) {
+  const localStorageKey = `transcription-${userId}-${fileId}`;
+
+  const cachedTranscription = localStorage.getItem(localStorageKey);
+  if (cachedTranscription) {
+    console.log("Returning transcription from localStorage:", fileId);
+    return cachedTranscription;
+  }
+
   const fileRef = ref(
     storage,
     `user-transcripts/${userId}/${fileId}/transcript`
@@ -72,8 +112,9 @@ async function downloadTranscription(userId, fileId) {
 
   try {
     const url = await getDownloadURL(fileRef);
-    const response = await fetch(url);
+    const response = await retry(() => fetch(url));
     const transcription = await response.text();
+    localStorage.setItem(localStorageKey, transcription);
     return transcription;
   } catch (error) {
     console.error("Error downloading transcription:", error);

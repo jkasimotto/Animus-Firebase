@@ -1,5 +1,6 @@
-const functions = require("firebase-functions");
+const admin = require("firebase-admin");
 const { getChannelsCollection } = require("./collections");
+const db = admin.firestore();
 
 async function createChannelDoc(folderId, uid) {
   const userChannelsCollection = getChannelsCollection(uid);
@@ -17,7 +18,22 @@ async function getChannelDoc(channelId) {
   return userChannelsCollection.doc(channelId).get();
 }
 
+async function getChannelDocByUserId(uid) {
+  const channelSnapshot = await db
+    .collection("channels")
+    .where("uid", "==", uid)
+    .limit(1)
+    .get();
+
+  if (channelSnapshot.empty) {
+    throw new Error(`No channel found for user ${uid}`);
+  }
+
+  return channelSnapshot.docs[0];
+}
+
 module.exports = {
   createChannelDoc,
   getChannelDoc,
+  getChannelDocByUserId,
 };
