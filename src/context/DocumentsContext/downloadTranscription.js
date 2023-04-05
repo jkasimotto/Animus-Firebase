@@ -4,7 +4,6 @@ import {
   setWithExpiry,
   getWithExpiry,
 } from "../../utils/localStorageWithExpiry";
-import { firestoreTimestampToDate, isSameDay } from "../../utils/timeUtils";
 import { storage } from "../../firebase";
 
 const cacheTTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
@@ -25,12 +24,6 @@ export async function downloadTranscription(
   return downloadAndCacheTranscription(userId, fileId, localStorageKey);
 }
 
-function isFileFromSelectedDay(fileCreationTimestamp, selectedDay) {
-  const selectedDayTimestamp = new Date(selectedDay).setHours(0, 0, 0, 0);
-  const fileDayTimestamp = firestoreTimestampToDate(fileCreationTimestamp);
-
-  return isSameDay(fileDayTimestamp, selectedDayTimestamp);
-}
 
 async function downloadAndCacheTranscription(userId, fileId, localStorageKey) {
   const fileRef = ref(

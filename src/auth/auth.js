@@ -41,6 +41,7 @@ async function signIn() {
   // Try and get the user document by user.uid
   const userDocRef = doc(db, "users", userCredential.user.uid);
   const docSnap = await getDoc(userDocRef);
+  
 
   if (docSnap.exists()) {
     if ("accessToken" in docSnap.data()) {
