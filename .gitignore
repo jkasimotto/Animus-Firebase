@@ -18,6 +18,9 @@ functions/node_modules/
 functions/credentials.json
 functions/serviceAccountKey.json
 functions/firebase-debug.log
+functions/firebase-config*
+serviceAccountKey*
+functions/emulator_data/
 
 # Storage
 storage.rules
