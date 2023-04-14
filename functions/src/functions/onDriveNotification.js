@@ -1,3 +1,4 @@
+const {google} = require('googleapis');
 const {
   getDriveApiClient,
   getDriveFiles,
@@ -9,6 +10,7 @@ const { batchWriteFileDocuments } = require("../firestore/files");
 const { getChannelDoc } = require("../firestore/channels");
 const { getUserTokens } = require("../firestore/users");
 const { extractTimestampFromFilename } = require("../utils/filename");
+const { config } = require("../../config/firebase-config");
 
 module.exports = functions.https.onRequest(async (req, res) => {
   await onDriveNotification(req, res);
@@ -30,8 +32,15 @@ async function onDriveNotification(req, res) {
   const uid = channelData.uid;
   const { _, refreshToken } = await getUserTokens(uid);
 
+  functions.logger.info("refresh token:", refreshToken);
+  functions.logger.info("client id:", config.clientId);
+  functions.logger.info("client secret:", config.clientSecret);
+
   // 5. Initialize Google Drive API client
   const drive = await getDriveApiClient(refreshToken);
+
+  functions.logger.info("Drive API client initialized: ", drive !== null ? "true" : "false")
+  functions.logger.info("Drive", drive);
 
   // 6. Fetch Google Drive files
   const files = await getDriveFiles(

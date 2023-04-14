@@ -14,6 +14,28 @@ const storage = getStorage(app);
 const db = getFirestore(app);
 const functions = getFunctions(app);
 
+// Check if we are running in a local environment
+if (window.location.hostname === "localhost") {
+
+  // Check we are in the development environment
+  if (process.env.REACT_APP_ENVIRONMENT !== "development") {
+    throw new Error("Running in local environment, but not in development environment.");
+  } 
+
+  // If so, connect to the local emulator
+  console.log("Running in local environment, connecting to emulators.");
+
+  connectFirestoreEmulator(db, "localhost", process.env.REACT_APP_EMULATOR_FIRESTORE_PORT);
+  console.log("Firestore emulator connected on port " + process.env.REACT_APP_EMULATOR_FIRESTORE_PORT + "");
+
+  connectStorageEmulator(storage, "localhost", process.env.REACT_APP_EMULATOR_STORAGE_PORT);
+  console.log("Storage emulator connected on port " + process.env.REACT_APP_EMULATOR_STORAGE_PORT + "");
+
+  connectFunctionsEmulator(functions, "localhost", process.env.REACT_APP_EMULATOR_FUNCTIONS_PORT);
+  console.log("Functions emulator connected on port " + process.env.REACT_APP_EMULATOR_FUNCTIONS_PORT + "");
+
+};
+
 (async () => {
   try {
     await enableIndexedDbPersistence(db);
@@ -28,9 +50,6 @@ const functions = getFunctions(app);
 })();
 
 
-// connectFirestoreEmulator(db, "localhost", 8080);
-// connectStorageEmulator(storage, "localhost", 9199);
-// connectFunctionsEmulator(functions, "localhost", 5001);
 
 export { app, storage, db, functions };
 export default app;

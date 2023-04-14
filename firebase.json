@@ -29,9 +29,6 @@
     "functions": {
       "port": 5001
     },
-    "hosting": {
-      "port": 5000
-    },
     "storage": {
       "port": 9199
     },
@@ -39,7 +36,8 @@
       "port": 8080
     },
     "ui": {
-      "enabled": true
+      "enabled": true,
+      "port": 4000
     },
     "exportOnExit": "emulator_data",
     "singleProjectMode": true

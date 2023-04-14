@@ -16,11 +16,10 @@ export const DocumentsProvider = ({ children }) => {
 
   useEffect(() => {
     if (!user) {
-      console.log("User not logged in");
       return;
     }
-    console.log("User logged in. Fetching transcripts...");
 
+    console.log("User is signed in, setting up documents listener.");
     const documentsQuery = buildDocumentsQuery(user.uid, selectedDay);
 
     const unsubscribe = onSnapshot(documentsQuery, async (snapshot) => {

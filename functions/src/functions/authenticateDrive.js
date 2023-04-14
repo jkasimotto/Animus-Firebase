@@ -92,90 +92,90 @@
 //   return newFolderDoc.data;
 // });
 
-// exports.authenticate = functions.https.onRequest(async (req, res) => {
-//   // Get the uid from the query string
-//   const uid = req.query.uid;
+exports.authenticate = functions.https.onRequest(async (req, res) => {
+  // Get the uid from the query string
+  const uid = req.query.uid;
 
-//   functions.logger.info("Query string: ", req.query);
+  functions.logger.info("Query string: ", req.query);
 
-//   // OAuth2 client
-//   const oAuth2Client = new google.auth.OAuth2(
-//     clientId,
-//     clientSecret,
-//     redirectUri
-//   );
+  // OAuth2 client
+  const oAuth2Client = new google.auth.OAuth2(
+    clientId,
+    clientSecret,
+    redirectUri
+  );
 
-//   // Generate a unique state for the user to prevent CSRF
-//   const state = crypto.randomBytes(20).toString("hex");
+  // Generate a unique state for the user to prevent CSRF
+  const state = crypto.randomBytes(20).toString("hex");
 
-//   functions.logger.info("UID before redirect: ", uid);
+  functions.logger.info("UID before redirect: ", uid);
 
-//   // Store nonce in Firestore
-//   await admin.firestore().collection("sessions").doc(state).set({ uid });
+  // Store nonce in Firestore
+  await admin.firestore().collection("sessions").doc(state).set({ uid });
 
-//   functions.logger.info("State before redirect: ", state);
+  functions.logger.info("State before redirect: ", state);
 
-//   const scopes = ["https://www.googleapis.com/auth/drive.readonly"];
+  const scopes = ["https://www.googleapis.com/auth/drive.readonly"];
 
-//   // Get the url that will be used for the consent dialog.
-//   const authorizeUrl = oAuth2Client.generateAuthUrl({
-//     access_type: "offline",
-//     scope: scopes,
-//     include_granted_scopes: true,
-//     state,
-//   });
+  // Get the url that will be used for the consent dialog.
+  const authorizeUrl = oAuth2Client.generateAuthUrl({
+    access_type: "offline",
+    scope: scopes,
+    include_granted_scopes: true,
+    state,
+  });
 
-//   // res.writeHead(301, { Location: authorizeUrl });
-//   res.redirect(authorizeUrl);
-// });
+  // res.writeHead(301, { Location: authorizeUrl });
+  res.redirect(authorizeUrl);
+});
 
-// exports.handleAuthenticationCode = functions.https.onRequest(
-//   async (req, res) => {
-//     // Get the code from the query string
-//     const code = req.query.code;
+exports.handleAuthenticationCode = functions.https.onRequest(
+  async (req, res) => {
+    // Get the code from the query string
+    const code = req.query.code;
 
-//     // Get the state from the query string
-//     const state = req.query.state;
-//     functions.logger.info("State after redirect: ", state);
+    // Get the state from the query string
+    const state = req.query.state;
+    functions.logger.info("State after redirect: ", state);
 
-//     // Get the session document
-//     const sessionDoc = await admin
-//       .firestore()
-//       .collection("sessions")
-//       .doc(state)
-//       .get();
+    // Get the session document
+    const sessionDoc = await admin
+      .firestore()
+      .collection("sessions")
+      .doc(state)
+      .get();
 
-//     // Get the uid from the session document
-//     const uid = sessionDoc.data().uid;
+    // Get the uid from the session document
+    const uid = sessionDoc.data().uid;
 
-//     // Get the user document
-//     const userDoc = await admin.firestore().collection("users").doc(uid).get();
+    // Get the user document
+    const userDoc = await admin.firestore().collection("users").doc(uid).get();
 
-//     // OAuth2 client
-//     const oAuth2Client = new google.auth.OAuth2(
-//       clientId,
-//       clientSecret,
-//       redirectUri
-//     );
+    // OAuth2 client
+    const oAuth2Client = new google.auth.OAuth2(
+      clientId,
+      clientSecret,
+      redirectUri
+    );
 
-//     oAuth2Client.on("tokens", (tokens) => {
-//       if (tokens.refresh_token) {
-//         // store the refresh_token in my database!
-//         functions.logger.info("Refresh token: ", tokens.refresh_token);
-//         userDoc.ref.update({
-//           refreshToken: tokens.refresh_token,
-//         });
-//       }
-//       functions.logger.info("Access token: ", tokens.access_token);
-//       userDoc.ref.update({
-//         accessToken: tokens.access_token,
-//       });
-//     });
+    oAuth2Client.on("tokens", (tokens) => {
+      if (tokens.refresh_token) {
+        // store the refresh_token in my database!
+        functions.logger.info("Refresh token: ", tokens.refresh_token);
+        userDoc.ref.update({
+          refreshToken: tokens.refresh_token,
+        });
+      }
+      functions.logger.info("Access token: ", tokens.access_token);
+      userDoc.ref.update({
+        accessToken: tokens.access_token,
+      });
+    });
 
-//     // Get the tokens
-//     const { tokens } = await oAuth2Client.getToken(code);
+    // Get the tokens
+    const { tokens } = await oAuth2Client.getToken(code);
 
-//     // Redirect to the home page
-//     res.redirect("http://localhost:3000");
-//   }
-// );
+    // Redirect to the home page
+    res.redirect("http://localhost:3000");
+  }
+);

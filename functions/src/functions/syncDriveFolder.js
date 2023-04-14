@@ -25,10 +25,7 @@ module.exports = functions.https.onCall(async (data, context) => {
     const channelData = channelDoc.data();
 
     // Extract user ID and refresh token
-    const { _, refreshToken } = await getUserTokens(uid);
-
-    // Initialize Google Drive API client
-    const drive = await getDriveApiClient(refreshToken);
+    const drive = await getDriveApiClient(uid);
 
     // Fetch Google Drive files
     const files = await getDriveFiles(

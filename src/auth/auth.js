@@ -1,3 +1,4 @@
+// import required libraries
 import {
   getAuth,
   onAuthStateChanged,
@@ -6,16 +7,16 @@ import {
   signOut,
 } from "firebase/auth";
 import { createContext, useState, useEffect } from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
 
+// create authentication context
 export const AuthContext = createContext();
 
-
+// create an authentication provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    console.log("Setting up authentication listener.");
     const unsubscribe = onAuthStateChanged(getAuth(), setUser);
     return unsubscribe;
   }, []);
@@ -25,59 +26,35 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Signs-in Friendly Chat.
-async function signIn() {
-  // Sign in Firebase using popup auth and Google as the identity provider.
-  var provider = new GoogleAuthProvider();
-  provider.addScope("https://www.googleapis.com/auth/drive.readonly");
-  const userCredential = await signInWithPopup(getAuth(), provider);
-  const stsTokenManager = userCredential._tokenResponse;
-  const { oauthAccessToken, refreshToken } = stsTokenManager;
-
-  console.log(userCredential);
-  console.log("accessToken", oauthAccessToken);
-  console.log("refreshToken", refreshToken);
-
-  // Try and get the user document by user.uid
-  const userDocRef = doc(db, "users", userCredential.user.uid);
-  const docSnap = await getDoc(userDocRef);
-  
-
-  if (docSnap.exists()) {
-    if ("accessToken" in docSnap.data()) {
-      console.log("Document data:", docSnap.data());
-    } else {
-      console.log("No accessToken in document data");
-      await updateDoc(userDocRef, {
-        accessToken: oauthAccessToken,
-        refreshToken: refreshToken,
-      });
-    }
-  } else {
-    // doc.data() will be undefined in this case
-    console.log("No such document!");
-  }
-}
-
-// Signs-out of Friendly Chat.
-function signOutUser() {
-  // Sign out of Firebase.
-  signOut(getAuth());
-}
-
-// Initialize firebase auth
+// initialize firebase authentication and listen for state changes
 function initFirebaseAuth() {
-  // Listen to auth state changes.
   onAuthStateChanged(getAuth(), authStateObserver);
 }
 
+// observer function for authentication state
 function authStateObserver(user) {
   if (user) {
     console.log("User is signed in!");
   } else {
-    // User is signed out!
     console.log("User is signed out!");
   }
 }
 
+// sign in user using Google as identity provider
+async function signIn() {
+  const userCredential = await signInWithGoogle();
+}
+
+// sign in user using GoogleAuthProvider
+async function signInWithGoogle() {
+  const provider = new GoogleAuthProvider();
+  return signInWithPopup(getAuth(), provider);
+}
+
+// sign out user
+function signOutUser() {
+  signOut(getAuth());
+}
+
+// export functions
 export { signIn, initFirebaseAuth, signOutUser };

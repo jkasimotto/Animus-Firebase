@@ -1,11 +1,8 @@
 const admin = require("firebase-admin");
 
-async function getUserDoc(uid) {
-  const userData = await admin
-    .firestore()
-    .collection("users")
-    .doc(uid)
-    .get();
+
+async function getUser(uid) {
+  const userData = await admin.firestore().collection("users").doc(uid).get();
   return userData;
 }
 
@@ -16,7 +13,20 @@ async function getUserTokens(uid) {
   return { accessToken, refreshToken };
 }
 
+async function updateTokens(uid, tokens) {
+  const userDoc = admin.firestore().collection("users").doc(uid);
+  await userDoc.update({
+    tokens: tokens,
+  });
+  // Log the userDocData
+  const userDocData = await userDoc.get();
+  console.log("userDocData", userDocData.data());
+
+  // 
+}
+
 module.exports = {
-  getUserDoc,
+  getUser,
   getUserTokens,
+  updateTokens,
 };
