@@ -5,6 +5,7 @@ import {
 } from "firebase/firestore";
 import { buildDocumentsQuery } from "./documentsQuery";
 import { handleDocumentChanges } from "./handleDocumentChanges";
+import dayjs from "dayjs";
 
 
 export const DocumentsContext = createContext();
@@ -12,7 +13,7 @@ export const DocumentsContext = createContext();
 export const DocumentsProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [documents, setDocuments] = useState([]);
-  const [selectedDay, setSelectedDay] = useState(new Date().getTime());
+  const [selectedDay, setSelectedDay] = useState(dayjs().valueOf());
 
   useEffect(() => {
     if (!user) {

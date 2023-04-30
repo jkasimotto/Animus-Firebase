@@ -3,12 +3,17 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Box from '@mui/material/Box';
+import dayjs from 'dayjs';
 
-const DaySwitcher = ({ setSelectedDay }) => {
+const DaySwitcher = ({ selectedDay, setSelectedDay }) => {
   const changeDay = (offset) => {
-    const currentDay = new Date();
-    currentDay.setDate(currentDay.getDate() + offset);
-    setSelectedDay(currentDay.getTime());
+    let newDay;
+    if (offset === 0) {
+      newDay = dayjs();
+    } else {
+      newDay = dayjs(selectedDay).add(offset, 'day');
+    }
+    setSelectedDay(newDay);
   };
 
   return (

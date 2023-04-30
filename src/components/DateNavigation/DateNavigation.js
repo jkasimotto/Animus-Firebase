@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DatePicker } from "@mui/x-date-pickers";
 import TextField from "@mui/material/TextField";
 import dayjs from "dayjs";
 
-const DateNavigation = ({ setSelectedDay }) => {
-  const [selectedDate, setSelectedDate] = useState(dayjs());
+const DateNavigation = ({ selectedDay, setSelectedDay }) => {
+  const [selectedDate, setSelectedDate] = useState(dayjs(selectedDay));
+
+  useEffect(() => {
+    setSelectedDate(dayjs(selectedDay));
+  }, [selectedDay]);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
