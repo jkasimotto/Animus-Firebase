@@ -8,6 +8,7 @@ import DocumentList from "../../components/DocumentList/DocumentList";
 import PageWrapper from "../../components/PageWrapper/PageWrapper";
 import SyncDriveButton from "../../components/SyncDriveButton/SyncDriveButton";
 import DaySwitcher from "../../components/DaySwitcher/DaySwitcher";
+import DateNavigation from "../../components/DateNavigation/DateNavigation";
 import { isSameDay, firestoreTimestampToDate } from "../../utils/timeUtils";
 
 const DocumentPageContent = () => {
@@ -23,6 +24,7 @@ const DocumentPageContent = () => {
     <PageWrapper>
       <SyncDriveButton />
       <DaySwitcher setSelectedDay={setSelectedDay} />
+      <DateNavigation setSelectedDay={setSelectedDay} />
       <DocumentList documents={filteredDocuments} />
     </PageWrapper>
   );
