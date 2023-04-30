@@ -11,12 +11,6 @@ const clientId = defineString("GOOGLE_CLIENT_ID");
 const clientSecret = defineString("GOOGLE_CLIENT_SECRET");
 const redirectUri = defineString("OAUTH2_REDIRECT_URI");
 
-// Replace these with your own client ID, client secret, and redirect URL from the Google API Console
-// const YOUR_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-// const YOUR_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-// const YOUR_REDIRECT_URL =
-//   "http://127.0.0.1:5001/website-f126b/us-central1/oauth2callback";
-
 /**
  * Firebase Cloud Function to generate an authorization URL for Google API access.
  * @param {Object} req - The request object from the client.
@@ -94,6 +88,7 @@ exports.oauth2callback = functions.https.onRequest(async (req, res) => {
     functions.logger.info("Tokens: ", tokens);
 
     // Store the tokens in the Firestore document for the user
+    functions.logger.info("UID: ", uid);
     await updateTokens(uid, tokens);
 
     functions.logger.info("Tokens stored successfully");

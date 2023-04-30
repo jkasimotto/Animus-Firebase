@@ -1,5 +1,5 @@
 const functions = require("firebase-functions");
-const { format, utcToZonedTime } = require("date-fns-tz");
+const { zonedTimeToUtc } = require("date-fns-tz");
 
 function extractTimestampFromFilename(filename) {
   const timestampRegex = /(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/;
@@ -22,10 +22,14 @@ function extractTimestampFromFilename(filename) {
       parseInt(second, 10)
     );
 
-    functions.logger.info(`Extracted timestamp from filename: ${filename}`);
-    functions.logger.info(`Timestamp: ${localTimestamp}`);
+    // Convert the local timestamp to Sydney time
+    const sydneyTimezone = "Australia/Sydney";
+    const sydneyTimestamp = zonedTimeToUtc(localTimestamp, sydneyTimezone);
 
-    return { timestamp: localTimestamp, timestampError: false };
+    functions.logger.info(`Extracted timestamp from filename: ${filename}`);
+    functions.logger.info(`Timestamp: ${sydneyTimestamp}`);
+
+    return { timestamp: sydneyTimestamp, timestampError: false };
   } else {
     return { timestamp: null, timestampError: true };
   }

@@ -8,9 +8,8 @@ async function getUser(uid) {
 
 async function getUserTokens(uid) {
   const userDoc = await admin.firestore().collection("users").doc(uid).get();
-  const accessToken = userDoc.data().accessToken;
-  const refreshToken = userDoc.data().refreshToken;
-  return { accessToken, refreshToken };
+  const tokens = userDoc.data().tokens;
+  return tokens;
 }
 
 async function updateTokens(uid, tokens) {

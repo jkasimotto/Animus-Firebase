@@ -1,5 +1,5 @@
 import { collection, query, orderBy, where } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db } from "../../firebaseConfig";
 
 export function buildDocumentsQuery(userId, selectedDayTimestamp) {
   const documentsRef = collection(db, "users", userId, "files");

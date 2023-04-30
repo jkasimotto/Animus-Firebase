@@ -17,8 +17,8 @@ module.exports = functions.firestore
 
 async function onNewFileInFirestore(snapshot, context) {
   const { userId, fileId } = context.params;
-  const userDoc = await admin.firestore().collection("users").doc(userId).get();
-  const drive = await getDriveApiClient(userDoc.data().refreshToken);
+  functions.logger.info("onNewFileInFirestore", { userId, fileId });
+  const drive = await getDriveApiClient(userId);
   const audioBytes = await downloadFile(drive, fileId);
   const audioBytesClean = await moveMoovAtomToStart(audioBytes);
   const storageRef = await uploadAudio(

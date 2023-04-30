@@ -4,11 +4,6 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
-import { initializeApp } from "firebase/app";
-import { getFirebaseConfig } from "./firebase-config.js";
-
-const firebaseAppConfig = getFirebaseConfig();
-initializeApp(firebaseAppConfig);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

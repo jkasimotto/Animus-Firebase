@@ -6,7 +6,6 @@ const {
 } = require("../utils/drive");
 const { batchWriteFileDocuments } = require("../firestore/files");
 const { getChannelDocByUserId } = require("../firestore/channels");
-const { getUserTokens } = require("../firestore/users");
 const { extractTimestampFromFilename } = require("../utils/filename");
 
 module.exports = functions.https.onCall(async (data, context) => {
@@ -51,7 +50,9 @@ module.exports = functions.https.onCall(async (data, context) => {
     await batchWriteFileDocuments(filesWithTimestamps, uid);
 
     // Update channel's last notification timestamp
-    await updateChannelLastNotification(channelDoc.id);
+    if (process.env.NODE_ENV === "production") {
+      await updateChannelLastNotification(channelDoc.id);
+    }
 
     return { success: true };
   } catch (error) {

@@ -4,7 +4,7 @@ import {
   setWithExpiry,
   getWithExpiry,
 } from "../../utils/localStorageWithExpiry";
-import { storage } from "../../firebase";
+import { storage } from "../../firebaseConfig";
 
 const cacheTTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
