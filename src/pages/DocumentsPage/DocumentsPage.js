@@ -11,6 +11,7 @@ import DaySwitcher from "../../components/DaySwitcher/DaySwitcher";
 import DateNavigation from "../../components/DateNavigation/DateNavigation";
 import { isSameDay } from "../../utils/timeUtils";
 import dayjs from "dayjs";
+import SyncDrive from "../../components/SyncDrive/SyncDrive";
 
 const DocumentPageContent = () => {
   const { documents, selectedDay, setSelectedDay } =
@@ -23,7 +24,7 @@ const DocumentPageContent = () => {
 
   return (
     <PageWrapper>
-      <SyncDriveButton />
+      <SyncDrive />
       <DaySwitcher selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
       <DateNavigation
         selectedDay={selectedDay}
