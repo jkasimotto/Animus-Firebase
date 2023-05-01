@@ -17,7 +17,7 @@ const DateNavigation = ({ selectedDay, setSelectedDay }) => {
 
   return (
     <DatePicker
-      label="Select Date"
+      // label="Select Date"
       value={selectedDate}
       onChange={handleDateChange}
       renderInput={(params) => <TextField {...params} />}
