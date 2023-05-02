@@ -9,3 +9,18 @@ Animus is a React-based application that uses Firebase functions and two Firebas
 5. Merge into development once satisfied with the feature.
 6. Review and test again with the team to ensure compatibility.
 7. Release to production when confident the feature works correctly.
+
+## Firestore structure:
+users: Store user information.
+    userId: unique ID for the user
+    email: user's email
+    displayName: user's display name
+    createdAt: timestamp of user registration
+    updatedAt: timestamp of last update
+    googleDrive: object containing Google Drive information (optional)
+        accessToken: OAuth2 access token
+        refreshToken: OAuth2 refresh token
+        expiresIn: OAuth2 token expiration time
+        syncedFiles: array of objects containing Google Drive file information
+            fileId: Google Drive file ID
+            lastSynced: timestamp of the last time the file was synced
