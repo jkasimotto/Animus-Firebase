@@ -24,7 +24,8 @@ const DocumentPageContent = () => {
 
   return (
     <PageWrapper>
-      <SyncDrive />
+      {/* <SyncDrive /> */}
+      <SyncDriveButton />
       <DateNavigation
         selectedDay={selectedDay}
         setSelectedDay={setSelectedDay}
