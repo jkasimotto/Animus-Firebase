@@ -24,3 +24,39 @@ users: Store user information.
         syncedFiles: array of objects containing Google Drive file information
             fileId: Google Drive file ID
             lastSynced: timestamp of the last time the file was synced
+
+Sub-collections under each user document:
+
+audio: Store metadata for audio files.
+    audioId: auto-generated ID
+    fileName: name of the file
+    storagePath: path to the file in Firebase Storage
+    transcriptionPath: path to the transcription file in Firebase Storage
+    transcriptionStatus: 'pending', 'processing', or 'completed'
+    title: title of the audio card (editable by the user)
+    createdAt: timestamp of file creation
+    updatedAt: timestamp of last update
+
+text: Store metadata for text files.
+    textId: auto-generated ID
+    fileName: name of the file
+    storagePath: path to the file in Firebase Storage
+    title: title of the text card (editable by the user)
+    createdAt: timestamp of file creation
+    updatedAt: timestamp of last update
+
+video: Store metadata for video files.
+    videoId: auto-generated ID
+    fileName: name of the file
+    storagePath: path to the file in Firebase Storage
+    transcriptionPath: path to the transcription file in Firebase Storage
+    transcriptionStatus: 'pending', 'processing', or 'completed'
+    title: title of the video card (editable by the user)
+    createdAt: timestamp of file creation
+    updatedAt: timestamp of last update:
+
+## Firebase storage structure
+/audio/{userId}/{audioId}: Store audio files, organized by user ID and audio ID.
+/text/{userId}/{textId}: Store text files, organized by user ID and text ID.
+/video/{userId}/{videoId}: Store video files, organized by user ID and video ID.
+/transcriptions/{userId}/{fileId}: Store transcriptions (from audio and video), organized by user ID and file ID.
