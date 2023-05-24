@@ -1,65 +1,84 @@
 const functions = require("firebase-functions");
-const {
-  getDriveApiClient,
-  getDriveFiles,
-  updateChannelLastNotification,
-} = require("../utils/drive");
-const { batchWriteFileDocuments } = require("../firestore/files");
-const { getChannelDocByUserId } = require("../firestore/channels");
+const { getDriveApiClient, getDriveFiles } = require("../utils/drive");
 const { extractTimestampFromFilename } = require("../utils/filename");
+const admin = require("firebase-admin");
+const db = admin.firestore();
 
 module.exports = functions.https.onCall(async (data, context) => {
   const uid = context.auth.uid;
-
   if (!uid) {
     throw new functions.https.HttpsError(
       "unauthenticated",
       "The function must be called while authenticated."
     );
   }
-
   try {
-    // Retrieve the Google Drive channel document
-    const channelDoc = await getChannelDocByUserId(uid);
-    const channelData = channelDoc.data();
+    const userDoc = await db.collection("users").doc(uid).get();
+    const googleDriveInfo = userDoc.data().googleDrive;
+    const drive = await getDriveApiClient(googleDriveInfo.tokens);
+    const syncedFile = googleDriveInfo.syncedFiles[0];
 
-    // Extract user ID and refresh token
-    const drive = await getDriveApiClient(uid);
-
-    // Fetch Google Drive files
     const files = await getDriveFiles(
       drive,
-      channelData.fileId,
-      channelData.lastNotification
+      syncedFile.fileId,
+      googleDriveInfo.lastSynced
     );
 
-    // Log number of files found
-    functions.logger.info(`${files.length} files found`);
-
-    // Extract timestamps from filenames and handle erroneous filenames
     const filesWithTimestamps = files.map((file) => {
       const { timestamp, timestampError } = extractTimestampFromFilename(
         file.name
       );
-      functions.logger.info(`Timestamp: ${timestamp}`);
-      functions.logger.info(`Timestamp error: ${timestampError}`);
-      return { ...file, timestamp, timestampError };
+      return { ...file, timestamp, timestampError, googleDriveId: file.id };
     });
 
-    // Write file documents to the database
-    await batchWriteFileDocuments(filesWithTimestamps, uid);
+    const batch = db.batch();
+    filesWithTimestamps.forEach((file) => {
+      const docRef = db.collection("media").doc();
+      batch.set(docRef, {
+        mediaId: docRef.id,
+        type: "audio",
+        userId: uid,
+        storagePath: `/media/${uid}/${docRef.id}`,
+        transcriptionStatus: "pending",
+        text: "",
+        title: file.name,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        timestamp: file.timestamp,
+        source: "googleDrive",
+        googleDriveId: file.googleDriveId,
+      });
+    });
+    await batch.commit();
 
-    // Update channel's last notification timestamp
-    if (process.env.NODE_ENV === "production") {
-      await updateChannelLastNotification(channelDoc.id);
-    }
+    updateLastSyncedTimestamp(uid);
 
     return { success: true };
   } catch (error) {
-    functions.logger.error("Error syncing drive folder:", error);
+    functions.logger.error("Error syncing Google Drive folder:", error);
     throw new functions.https.HttpsError(
       "internal",
-      "An error occurred while syncing the drive folder."
+      "An error occurred while syncing the Google Drive folder."
     );
   }
 });
+
+async function updateLastSyncedTimestamp(uid) {
+  const currentEnvironment = process.env.NODE_ENV;
+  let timestamp;
+
+  functions.logger.info("Current environment:", currentEnvironment);
+  if (currentEnvironment === "development") {
+    // If in development mode, set to this morning's timestamp
+    const thisMorning = new Date();
+    thisMorning.setHours(0, 0, 0, 0);
+    timestamp = admin.firestore.Timestamp.fromDate(thisMorning);
+  } else {
+    // In production mode, use the server timestamp
+    timestamp = admin.firestore.FieldValue.serverTimestamp();
+  }
+
+  await db.collection("users").doc(uid).update({
+    "googleDrive.lastSynced": timestamp,
+  });
+}

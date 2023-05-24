@@ -1,0 +1,14 @@
+/* MediaCardList.module.css */
+.media-card-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 90%;
+  }
+  
+  @media (min-width: 768px) {
+    .media-card-container {
+      max-width: 50%;
+    }
+  }
+  

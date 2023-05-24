@@ -5,17 +5,19 @@ const config = require("../config/config");
 admin.initializeApp(config);
 
 // const createDriveWatchChannel = require("./functions/createDriveWatchChannel");
-const onDriveNotification = require("./functions/onDriveNotification");
-const onNewFileInFirestore = require("./functions/onNewFileInFirestore");
-const onStorageUrlUpdate = require("./functions/onStorageUrlChange");
+// const onNewFileInFirestore = require("./functions/onNewFileInFirestore");
 const syncDriveFolder = require("./functions/syncDriveFolder");
 const {generateAuthUrl, oauth2callback} = require('./functions/googleOAuth');
-
+const processNewAudioFile = require('./functions/processNewAudioFile');
+const transcribeAudioFileOnUpload = require('./functions/transcribeAudioFileOnUpload');
+const generateTitle = require('./functions/generateTitle');
 
 // exports.createDriveWatchChannel = createDriveWatchChannel;
-exports.onDriveNotification = onDriveNotification;
-exports.onNewFileInFirestore = onNewFileInFirestore;
-exports.onStorageUrlUpdate = onStorageUrlUpdate;
+// exports.onNewFileInFirestore = onNewFileInFirestore;
+// exports.onStorageUrlUpdate = onStorageUrlUpdate;
 exports.syncDriveFolder = syncDriveFolder;
 exports.generateAuthUrl = generateAuthUrl;
 exports.oauth2callback = oauth2callback;
+exports.processNewAudioFile = processNewAudioFile;
+exports.transcribeAudioFileOnUpload = transcribeAudioFileOnUpload;
+exports.generateTitle = generateTitle;

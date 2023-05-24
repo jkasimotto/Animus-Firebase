@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthContext } from '../../auth/auth';
 // Import your pages here
-import DocumentPage from '../../pages/DocumentsPage/DocumentsPage';
 import SignInPage from '../../pages/SignInPage/SignInPage';
+import MediaTimelinePage from '../../pages/MediaTimelinePage/MediaTimelinePage';
 
 const PageContent = () => {
   const { user } = useContext(AuthContext);
@@ -13,7 +13,8 @@ const PageContent = () => {
     <>
       {user ? (
         <Routes>
-          <Route path="/" element={<DocumentPage />} />
+          <Route path="/" element={<MediaTimelinePage />} />
+          {/* <Route path="/test" element={<MediaTimelinePage />} /> */}
           {/* Add more routes as needed */}
         </Routes>
       ) : (

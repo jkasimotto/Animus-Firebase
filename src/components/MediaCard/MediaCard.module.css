@@ -1,0 +1,12 @@
+/* MediaCard.module.css */
+.media-card {
+    width: 100%;
+    max-width: 90%;
+  }
+  
+  @media (min-width: 768px) {
+    .media-card {
+      max-width: 50%;
+    }
+  }
+  

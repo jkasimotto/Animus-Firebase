@@ -1,10 +1,12 @@
 import { initializeApp } from "firebase/app";
 import "firebase/auth";
 import "firebase/messaging";
-import {
+import { 
   getFirestore,
   connectFirestoreEmulator,
-  enableIndexedDbPersistence,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
 } from "firebase/firestore";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
@@ -20,7 +22,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-const db = getFirestore(app);
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+    settings: { cacheSizeBytes: Infinity },
+  }),
+});
 const functions = getFunctions(app);
 
 if (process.env.REACT_APP_ENVIRONMENT === "development") {
@@ -38,21 +45,6 @@ if (process.env.REACT_APP_ENVIRONMENT === "development") {
   console.log("Storage emulator connected on port " + storagePort);
   console.log("Functions emulator connected on port " + functionsPort);
 }
-
-(async () => {
-  try {
-    await enableIndexedDbPersistence(db);
-    console.log("Persistence enabled.");
-  } catch (err) {
-    if (err.code === "failed-precondition") {
-      console.log(
-        "Multiple tabs open, persistence can be enabled in only one tab at a time."
-      );
-    } else if (err.code === "unimplemented") {
-      console.log("The current browser does not support offline persistence.");
-    }
-  }
-})();
 
 export { app, storage, db, functions };
 export default app;

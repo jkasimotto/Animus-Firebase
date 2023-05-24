@@ -3,9 +3,7 @@ const { google } = require("googleapis");
 const { defineString } = require("firebase-functions/params");
 const cors = require("cors");
 const corsHandler = cors({ origin: true });
-const { getUser, updateTokens } = require("../firestore/users");
-const { getChannelDoc } = require("../firestore/channels");
-
+const { createGoogleDriveTokens } = require("../firestore");
 
 const clientId = defineString("GOOGLE_CLIENT_ID");
 const clientSecret = defineString("GOOGLE_CLIENT_SECRET");
@@ -18,7 +16,6 @@ const redirectUri = defineString("OAUTH2_REDIRECT_URI");
  */
 exports.generateAuthUrl = functions.https.onRequest(async (req, res) => {
   corsHandler(req, res, async () => {
-
     functions.logger.info("Client id: ", clientId.value());
     functions.logger.info("Client secret: ", clientSecret.value());
     functions.logger.info("Redirect uri: ", redirectUri.value());
@@ -41,7 +38,7 @@ exports.generateAuthUrl = functions.https.onRequest(async (req, res) => {
     const oauth2Client = new google.auth.OAuth2(
       clientId.value(),
       clientSecret.value(),
-      redirectUri.value() 
+      redirectUri.value()
     );
 
     // Generate the authorization URL with the passed scopes and state (in this case, the UID)
@@ -64,7 +61,6 @@ exports.oauth2callback = functions.https.onRequest(async (req, res) => {
     return;
   }
 
-
   const oauth2Client = new google.auth.OAuth2(
     clientId.value(),
     clientSecret.value(),
@@ -84,27 +80,9 @@ exports.oauth2callback = functions.https.onRequest(async (req, res) => {
   try {
     // Exchange the authorization code for access and refresh tokens
     const { tokens } = await oauth2Client.getToken(code);
-
-    functions.logger.info("Tokens: ", tokens);
-
-    // Store the tokens in the Firestore document for the user
-    functions.logger.info("UID: ", uid);
-    await updateTokens(uid, tokens);
-
+    // Save in firestore
+    await createGoogleDriveTokens(uid, tokens);
     functions.logger.info("Tokens stored successfully");
-
-    // Read the user doc by uid
-    const userDocRef = await getUser(uid);
-
-    const channelDocRef = await getChannelDoc("s0ng1YkzlewvUZcsPsmF");
-
-    functions.logger.info("Channel doc data: ", channelDocRef.data());
-
-
-    // Log the user doc
-    functions.logger.info("User doc: ", userDocRef.data());
-
-    // res.status(200).send("Tokens stored successfully");
     res.redirect("http://localhost:3000");
   } catch (error) {
     console.error("Error exchanging code for tokens:", error);

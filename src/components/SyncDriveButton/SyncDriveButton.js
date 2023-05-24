@@ -4,6 +4,7 @@ import firebase from "firebase/app";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { AuthContext } from "../../auth/auth";
+import { checkGoogleDriveTokensExist } from "../../services/firestore";
 
 const functions = getFunctions();
 const db = getFirestore();
@@ -19,10 +20,7 @@ const SyncDriveButton = () => {
     const fetchUserTokens = async () => {
       if (user) {
         console.log("User logged in, fetching tokens.")
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        setHasTokens(userDoc.data()?.tokens);
-        console.log("userDoc", userDoc.data());
+        setHasTokens(await checkGoogleDriveTokensExist(user.uid));
       }
     };
 
@@ -86,6 +84,8 @@ const SyncDriveButton = () => {
       setLoading(false);
     }
   };
+
+  console.log("hasTokens", hasTokens);
 
   return (
     <div>
