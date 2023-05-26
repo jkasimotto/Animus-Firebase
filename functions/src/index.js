@@ -11,6 +11,7 @@ const {generateAuthUrl, oauth2callback} = require('./functions/googleOAuth');
 const processNewAudioFile = require('./functions/processNewAudioFile');
 const transcribeAudioFileOnUpload = require('./functions/transcribeAudioFileOnUpload');
 const generateTitle = require('./functions/generateTitle');
+const generateReport = require('./functions/generateReport');
 
 // exports.createDriveWatchChannel = createDriveWatchChannel;
 // exports.onNewFileInFirestore = onNewFileInFirestore;
@@ -21,3 +22,4 @@ exports.oauth2callback = oauth2callback;
 exports.processNewAudioFile = processNewAudioFile;
 exports.transcribeAudioFileOnUpload = transcribeAudioFileOnUpload;
 exports.generateTitle = generateTitle;
+exports.generateReport = generateReport;

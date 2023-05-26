@@ -32,6 +32,7 @@
     "googleapis": "^112.0.0",
     "markdown-it": "^13.0.1",
     "markdown-it-react": "^0.0.2",
+    "mui-markdown": "^1.0.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "openai": "^3.2.1",
     "react": "^18.2.0",
@@ -42,6 +43,7 @@
     "react-router": "^6.7.0",
     "react-router-dom": "^6.7.0",
     "react-scripts": "5.0.1",
+    "remark-gfm": "^3.0.1",
     "waveheader": "^0.0.2",
     "web-audio-api": "^0.2.2",
     "web-vitals": "^2.1.4"

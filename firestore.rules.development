@@ -2,6 +2,11 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Allow authenticated users to read and write their own reports
+    match /reports/{reportId} {
+      allow read, write: if request.auth.uid == resource.data.userId;
+    }
     
     // Rules for 'users' collection
     match /users/{userId} {

@@ -63,16 +63,14 @@ The Media Timeline feature allows users to visualize the timeline of their media
 
 `functions/src/functions/*`:
 
-- `authenticateDrive.js`: This function likely authenticates the user with Google Drive using OAuth.
-- `createDriveWatchChannel.js`: This function possibly creates a watch channel with Google Drive to receive notifications of changes.
 - `googleOAuth.js`: This function likely handles the OAuth process with Google.
-- `onDriveNotification.js`: This function is probably triggered by notifications from the Google Drive watch channel and processes those notifications.
-- `onNewFileInFirestore.js`: This function likely gets triggered when a new file document is created in Firestore.
+- `onNewDocument.js`: This function triggers whenever a new media document (audio, video, or text) is created in Firestore. It checks the type of media and if audio/video, initiates the transcription process and initiates GPT-4 analysis for the content.
 - `onNewUser.js`: This function is probably triggered when a new user is created in Firestore.
 - `onStorageUrlChange.js`: This function likely gets triggered when the URL of a file in Firebase Storage is changed.
 - `processNewAudioFile.js`: This function likely processes newly uploaded audio files.
+- `onTranscriptionComplete.js`: This function gets triggered when the transcription of an audio/video document is complete.
 - `syncDriveFolder.js`: This function probably syncs files from a user's Google Drive folder.
-- `transcribeAudioFileOnUpload.js`: This function likely transcribes audio files when they are uploaded.
+
 
 `src/components/*`:
 

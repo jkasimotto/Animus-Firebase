@@ -5,12 +5,13 @@ import { AuthProvider } from "./auth/auth";
 import Layout from "./components/Layout/Layout";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import TimePeriodProvider from "./contexts/TimePeriodContext";
 
 const App = () => {
   console.log("Environment: " + process.env.REACT_APP_ENVIRONMENT);
   console.log(
     "Firebase project id (from config): " +
-      process.env.REACT_APP_FIREBASE_PROJECT_ID
+    process.env.REACT_APP_FIREBASE_PROJECT_ID
   );
   console.log(
     "Test environment variable: " + process.env.REACT_APP_TEST_ENV_VAR
@@ -18,9 +19,11 @@ const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Layout />
-        </LocalizationProvider>
+        <TimePeriodProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Layout />
+          </LocalizationProvider>
+        </TimePeriodProvider>
       </AuthProvider>
     </BrowserRouter>
   );
