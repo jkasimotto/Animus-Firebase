@@ -39,47 +39,52 @@ module.exports = functions.https.onCall(async (data, context) => {
         syncedFile.fileId,
         googleDriveInfo.lastSynced
       );
+
+      const filesWithTimestamps = files.map((file) => {
+        const { timestamp, timestampError } = extractTimestampFromFilename(
+          file.name
+        );
+        return { ...file, timestamp, timestampError, googleDriveId: file.id };
+      });
+
+      const batch = db.batch();
+      filesWithTimestamps.forEach((file) => {
+        const docRef = db.collection("media").doc();
+        batch.set(docRef, {
+          mediaId: docRef.id,
+          type: "audio",
+          userId: uid,
+          storagePath: `/media/${uid}/${docRef.id}`,
+          transcriptionStatus: "pending",
+          text: "",
+          title: file.name,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          timestamp: file.timestamp,
+          source: "googleDrive",
+          googleDriveId: file.googleDriveId,
+        });
+      });
+      await batch.commit();
+
+      updateLastSyncedTimestamp(uid);
+
+      return { success: true };
     } catch (error) {
       if (error.message === "invalid_grant") {
         throw new functions.https.HttpsError(
           "unauthenticated",
           "Invalid token. The user must authenticate again."
         );
+      } else {
+        functions.logger.error("Error syncing Google Drive folder:", error);
+        throw new functions.https.HttpsError(
+          "internal",
+          "An error occurred while syncing the Google Drive folder."
+        );
       }
     }
-
-    const filesWithTimestamps = files.map((file) => {
-      const { timestamp, timestampError } = extractTimestampFromFilename(
-        file.name
-      );
-      return { ...file, timestamp, timestampError, googleDriveId: file.id };
-    });
-
-    const batch = db.batch();
-    filesWithTimestamps.forEach((file) => {
-      const docRef = db.collection("media").doc();
-      batch.set(docRef, {
-        mediaId: docRef.id,
-        type: "audio",
-        userId: uid,
-        storagePath: `/media/${uid}/${docRef.id}`,
-        transcriptionStatus: "pending",
-        text: "",
-        title: file.name,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        timestamp: file.timestamp,
-        source: "googleDrive",
-        googleDriveId: file.googleDriveId,
-      });
-    });
-    await batch.commit();
-
-    updateLastSyncedTimestamp(uid);
-
-    return { success: true };
   } catch (error) {
-    functions.logger.info("ERROR MESSAGE:", error.message);
     // If the user is unauthenticated, throw the error so the client can
     // handle it
     if (error.message === "Invalid token. The user must authenticate again.") {
