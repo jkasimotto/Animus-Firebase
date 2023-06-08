@@ -41,7 +41,12 @@ const SyncDriveButton = () => {
       await syncDriveFolderFunction();
       setMessage("Drive folder synced successfully!");
     } catch (error) {
-      setMessage("Error syncing drive folder: " + error.message);
+      if (error.message === 'Invalid token. The user must authenticate again.') {
+        console.log("FUCK YOU")
+        grantScopes();
+      } else {
+        setMessage("Error syncing drive folder: " + error.message);
+      }
     } finally {
       setLoading(false);
     }

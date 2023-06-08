@@ -3,6 +3,7 @@ const { getDriveApiClient, getDriveFiles } = require("../utils/drive");
 const { extractTimestampFromFilename } = require("../utils/filename");
 const admin = require("firebase-admin");
 const db = admin.firestore();
+const { TokenInvalidError } = require("../errors/TokenInvalidError");
 
 module.exports = functions.https.onCall(async (data, context) => {
   const uid = context.auth.uid;
@@ -15,14 +16,37 @@ module.exports = functions.https.onCall(async (data, context) => {
   try {
     const userDoc = await db.collection("users").doc(uid).get();
     const googleDriveInfo = userDoc.data().googleDrive;
-    const drive = await getDriveApiClient(googleDriveInfo.tokens);
+
+    let drive;
+    try {
+      drive = await getDriveApiClient(googleDriveInfo.tokens);
+    } catch (error) {
+      if (error instanceof TokenInvalidError) {
+        throw new functions.https.HttpsError(
+          "unauthenticated",
+          "Invalid token. The user must authenticate again."
+        );
+      } else {
+        throw error;
+      }
+    }
+
     const syncedFile = googleDriveInfo.syncedFiles[0];
 
-    const files = await getDriveFiles(
-      drive,
-      syncedFile.fileId,
-      googleDriveInfo.lastSynced
-    );
+    try {
+      const files = await getDriveFiles(
+        drive,
+        syncedFile.fileId,
+        googleDriveInfo.lastSynced
+      );
+    } catch (error) {
+      if (error.message === "invalid_grant") {
+        throw new functions.https.HttpsError(
+          "unauthenticated",
+          "Invalid token. The user must authenticate again."
+        );
+      }
+    }
 
     const filesWithTimestamps = files.map((file) => {
       const { timestamp, timestampError } = extractTimestampFromFilename(
@@ -55,11 +79,18 @@ module.exports = functions.https.onCall(async (data, context) => {
 
     return { success: true };
   } catch (error) {
-    functions.logger.error("Error syncing Google Drive folder:", error);
-    throw new functions.https.HttpsError(
-      "internal",
-      "An error occurred while syncing the Google Drive folder."
-    );
+    functions.logger.info("ERROR MESSAGE:", error.message);
+    // If the user is unauthenticated, throw the error so the client can
+    // handle it
+    if (error.message === "Invalid token. The user must authenticate again.") {
+      throw error;
+    } else {
+      functions.logger.error("Error syncing Google Drive folder:", error);
+      throw new functions.https.HttpsError(
+        "internal",
+        "An error occurred while syncing the Google Drive folder."
+      );
+    }
   }
 });
 
