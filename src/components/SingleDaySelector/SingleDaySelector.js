@@ -52,25 +52,31 @@ const SingleDaySelector = () => {
         width: "100%",
       }}
     >
-      <Button
+      {/* <Button
+        sx={{
+          height: "100%"
+        }}
         variant="outlined"
         onClick={() => handleDateChange(prevDate)}
       >
         {"<"}
-      </Button>
+      </Button> */}
       <DatePicker
         value={selectedDate}
         onChange={handleDateChange}
         renderInput={(params) => <TextField {...params} fullWidth />}
         format="YYYY-MM-DD"
-        sx={{flexGrow: 1}}
+        sx={{ flexGrow: 1 }}
       />
-      <Button
+      {/* <Button
+        sx={{
+          height: "100%"
+        }}
         variant="outlined"
         onClick={() => handleDateChange(nextDate)}
       >
         {">"}
-      </Button>
+      </Button> */}
     </Box>
   );
 };

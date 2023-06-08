@@ -5,6 +5,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { AuthContext } from "../../auth/auth";
 import { checkGoogleDriveTokensExist } from "../../services/firestore";
+import MenuButton from "../MenuButton/MenuButton";
 
 const functions = getFunctions();
 const db = getFirestore();
@@ -88,18 +89,15 @@ const SyncDriveButton = () => {
   console.log("hasTokens", hasTokens);
 
   return (
-    <div>
-      <Button
-        sx={{ mt: 2 }}
-        variant="contained"
-        color="primary"
-        onClick={hasTokens ? syncDriveFolder : grantScopes}
-        disabled={loading}
-      >
-        {hasTokens ? "Sync Drive Folder" : "Grant Scopes"}
-      </Button>
-      {message && <p>{message}</p>}
-    </div>
+    <MenuButton
+      variant="contained"
+      color="primary"
+      action={hasTokens ? syncDriveFolder : grantScopes}
+      loading={loading}
+      hasAction={true}
+    >
+      {hasTokens ? "Sync Drive Folder" : "Grant Scopes"}
+    </MenuButton>
   );
 };
 

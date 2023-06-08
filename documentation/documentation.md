@@ -89,3 +89,8 @@ The Media Timeline feature allows users to visualize the timeline of their media
 - `TextCard.js`: This component likely renders a card for a text file.
 - `TextUploader.js`: This component probably handles the upload of text files.
 - `VideoCard.js`: This component likely renders a card for a video file.
+
+
+| Mood Summary | Time of Mood Change | Possible Triggers |
+| --- | --- | --- |
+| Mentally exhausted and fatigued | 2023-05-30 16:10:17 | N/A || Low energy, low mood, uninterested | 2023-05-30 20:09:30 | Slow motivation, low energy, low mood || Feeling better after being out and about | 2023-05-30 20:18:54 | Being out of the house, opportunity outside | Note: No explicit mood score was given.

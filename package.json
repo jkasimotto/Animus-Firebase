@@ -54,7 +54,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "emulators": "firebase emulators:start --import ./functions/emulator_data",
-    "emulators:user-with-data": "firebase emulators:start --import ./functions/emulator_data/user-data-export"
+    "emulators:user-with-data": "firebase emulators:start --import ./functions/emulator_data"
   },
   "eslintConfig": {
     "extends": [

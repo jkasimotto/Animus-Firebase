@@ -8,6 +8,7 @@ import { db } from "../../firebaseConfig";
 import { retry } from "../../utils/retry";
 import styles from "./MediaCard.module.css";
 import { AuthContext } from "../../auth/auth";
+import { Timestamp } from "firebase/firestore";
 
 const MediaCard = ({ media }) => {
   const { title, id, type, text, storagePath } = media;
@@ -17,6 +18,9 @@ const MediaCard = ({ media }) => {
   const [inputText, setInputText] = useState(text);
   const [audioUrl, setAudioUrl] = useState("");
   const { user } = useContext(AuthContext);
+
+  const timestampDate = media.timestamp instanceof Timestamp ? media.timestamp.toDate() : new Date();
+  const formattedDate = timestampDate.toLocaleString(); // This will format it according to the user's locale
 
   useEffect(() => {
     if (type === 'audio') {
@@ -70,15 +74,23 @@ const MediaCard = ({ media }) => {
             onChange={(e) => setInputTitle(e.target.value)}
           />
         ) : (
-          <Typography
-            gutterBottom
-            variant="h5"
-            component="div"
-            onClick={handleTitleClick}
-            sx={{ cursor: "pointer" }}
-          >
-            {inputTitle || "Untitled"}
-          </Typography>
+          <>
+            <Typography
+              gutterBottom
+              variant="h5"
+              component="div"
+              onClick={handleTitleClick}
+              sx={{ cursor: "pointer" }}
+            >
+              {inputTitle || "Untitled"}
+            </Typography>
+            <Typography
+              variant="subtitle2"
+              color="text.secondary"
+            >
+              {formattedDate}
+            </Typography>
+          </>
         )}
         {isTextEditing ? (
           <TextField

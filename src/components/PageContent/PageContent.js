@@ -5,7 +5,7 @@ import { AuthContext } from '../../auth/auth';
 // Import your pages here
 import SignInPage from '../../pages/SignInPage/SignInPage';
 import MediaTimelinePage from '../../pages/MediaTimelinePage/MediaTimelinePage';
-import ReportsPage from '../../pages/ReportsPage/ReportsPage';
+import ReportCardListPage from '../../pages/ReportsPage/ReportCardListPage';
 
 const PageContent = () => {
   const { user } = useContext(AuthContext);
@@ -14,8 +14,8 @@ const PageContent = () => {
     <>
       {user ? (
         <Routes>
-          <Route path="/" element={<MediaTimelinePage />} />
-          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/logs" element={<MediaTimelinePage />} />
+          <Route path="/" element={<ReportCardListPage/>} />
           {/* <Route path="/test" element={<MediaTimelinePage />} /> */}
           {/* Add more routes as needed */}
         </Routes>

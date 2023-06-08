@@ -12,13 +12,7 @@ import withLayout from "../../components/WithLayout/WithLayout";
 import { TimePeriodContext } from "../../contexts/TimePeriodContext";
 import MediaCardList from "../../components/MediaCardList/MediaCardList";
 import SyncDriveButton from "../../components/SyncDriveButton/SyncDriveButton";
-
-// This component represents the button to view reports
-const ViewReportsButton = () => (
-  <Button variant="contained" component={Link} to="/reports" sx={{ ml: 2 }}>
-    View Reports
-  </Button>
-);
+import NavReportsButton from "../../components/ViewReportsButton/ViewReportsButton";
 
 // Main component
 const MediaTimelinePage = () => {
@@ -113,7 +107,7 @@ const MediaTimelinePage = () => {
 };
 
 export default withLayout(MediaTimelinePage, {
-  menuComponents: [SyncDriveButton, ViewReportsButton],
+  menuComponents: [SyncDriveButton, NavReportsButton],
   handleSubmit: (e) => {
     console.log("submit");
   },

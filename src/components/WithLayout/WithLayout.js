@@ -1,22 +1,13 @@
 import React from "react";
-import { Box, Button, Menu, MenuItem } from "@mui/material";
+import { Box, Button, Grid, Divider } from "@mui/material";
 import TextUploader from "../../components/TextUploader/TextUploader";
 import SingleDaySelector from "../SingleDaySelector/SingleDaySelector";
+import ScrollableSidebar from "../ScrollableSidebar/ScrollableSidebar";
 
 const withLayout = (PageComponent, options) => {
   const { menuComponents, handleSubmit, selectedDay, setSelectedDay } = options;
 
   return (props) => {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-
     return (
       <Box
         sx={{
@@ -26,26 +17,6 @@ const withLayout = (PageComponent, options) => {
           minHeight: "100%",
         }}
       >
-        <Button
-          aria-controls="simple-menu"
-          aria-haspopup="true"
-          onClick={handleClick}
-        >
-          Open Menu
-        </Button>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          {menuComponents.map((Component, index) => (
-            <MenuItem key={index} onClick={handleClose}>
-              <Component />
-            </MenuItem>
-          ))}
-        </Menu>
         <Box
           sx={{
             display: "flex",
@@ -54,8 +25,22 @@ const withLayout = (PageComponent, options) => {
             overflowY: "auto",
           }}
         >
-          <SingleDaySelector selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
           <PageComponent {...props} />
+        </Box>
+        <Divider />
+        <Box>
+          <Grid container spacing={2}>
+            {menuComponents.map((Component, index) => (
+              <Grid item xs={6} sm={6} md={4} lg={3} key={index}>
+                <Box sx={{ width: '100%', height: '100%' }}>
+                  <Component />
+                </Box>
+              </Grid>
+            ))}
+            <Grid item xs={6} sm={6} md={4} lg={3}>
+              <SingleDaySelector selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
+            </Grid>
+          </Grid>
         </Box>
         <TextUploader handleSubmit={handleSubmit} />
       </Box>

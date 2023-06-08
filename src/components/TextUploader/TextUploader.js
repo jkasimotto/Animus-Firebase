@@ -2,6 +2,8 @@ import React, { useState, useContext } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import MicIcon from '@mui/icons-material/Mic';
 import { AuthContext } from "../../auth/auth";
 import { collection, addDoc } from "@firebase/firestore";
 import { db } from "../../firebaseConfig";
@@ -41,13 +43,18 @@ const TextUploader = () => {
     }
   };
 
+  // TODO: Implement the transcription functionality
+  const handleTranscription = (event) => {
+    console.log("Transcription button clicked");
+  }
+
   return (
     <Box
       sx={{
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
+        padding: "0 0 16px 16px",
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
@@ -59,7 +66,7 @@ const TextUploader = () => {
           value={inputText}
           onChange={handleInputChange}
           onKeyPress={handleUpload}
-          sx={{ marginRight: "16px", width: "100%" }}
+          sx={{ width: "100%" }}
         />
       </Box>
       <Button
@@ -70,6 +77,13 @@ const TextUploader = () => {
       >
         Upload
       </Button>
+      <IconButton
+        color="primary"
+        onClick={handleTranscription}
+        sx={{ marginLeft: "8px" }}
+      >
+        <MicIcon />
+      </IconButton>
     </Box>
   );
 };
