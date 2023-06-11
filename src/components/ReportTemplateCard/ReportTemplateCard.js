@@ -53,7 +53,7 @@ const ReportTemplateCard = ({ reportTemplate }) => {
     reportDataCollectionRef,
     where("userId", "==", user.uid),
     where("reportType", "==", reportTemplate.type),
-    where("date", ">=", startOfDay(startDate)),
+    where("date", ">=", startOfDay(endDate)),
     where("date", "<=", endOfDay(endDate)),
     limit(1)
   );
