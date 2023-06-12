@@ -23,7 +23,10 @@ import { db, functions } from "../../firebaseConfig";
 import { TableHead } from "@mui/material";
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import { doc, updateDoc } from "@firebase/firestore";
+import { doc, updateDoc, deleteDoc } from "@firebase/firestore";
+import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
+import EditIcon from '@mui/icons-material/Edit'; // Import Edit Icon
+
 
 const ReportTemplateCard = ({ reportTemplate }) => {
   const { user } = useContext(AuthContext);
@@ -36,6 +39,12 @@ const ReportTemplateCard = ({ reportTemplate }) => {
   const [isLoading, setIsLoading] = useState(false); // new state for loading status
 
   console.log(reportTemplate.id)
+
+  const deleteReportTemplate = async () => {
+    console.log("Deleting report template: ", reportTemplate.id);
+    const reportTemplateRef = doc(db, "reportTemplates", reportTemplate.id);
+    await deleteDoc(reportTemplateRef);
+  };
 
   const updatePrompt = async () => {
     const reportTemplateRef = doc(db, "reportTemplates", reportTemplate.id);
@@ -133,6 +142,9 @@ const ReportTemplateCard = ({ reportTemplate }) => {
       <CardHeader
         action={
           <>
+            <IconButton onClick={deleteReportTemplate}>
+              <DeleteIcon />
+            </IconButton>
             {isLoading ? (
               <CircularProgress />
             ) : tableData.headers.length > 0 ? (
@@ -147,12 +159,14 @@ const ReportTemplateCard = ({ reportTemplate }) => {
             <IconButton onClick={() => setShowTable(!showTable)}>
               {showTable ? <MinimizeIcon /> : <MaximizeIcon />}
             </IconButton>
+            <IconButton onClick={() => setShowPrompt(!showPrompt)}>
+              <EditIcon />
+            </IconButton>
           </>
         }
-        title={reportTemplate.title} // Added the title prop here
+        title={reportTemplate.title}
       />
       <CardContent>
-        <Button onClick={() => setShowPrompt(!showPrompt)}>Toggle Prompt</Button>
         {showPrompt &&
           <TextField
             fullWidth

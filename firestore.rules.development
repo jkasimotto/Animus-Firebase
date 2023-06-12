@@ -8,6 +8,13 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == resource.data.userId;
     }
     
+    // Allow all authenticated users to read reportTemplates
+    match /reportTemplates/{templateId} {
+      allow read: if request.auth != null;
+      // Optionally, you can restrict write access to admins or specific users
+      allow write: if false; 
+    }
+    
     // Rules for 'users' collection
     match /users/{userId} {
       // Allows read and write operations on a user's document by the user only

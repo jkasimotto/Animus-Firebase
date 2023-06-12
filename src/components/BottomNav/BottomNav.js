@@ -1,18 +1,15 @@
-import AssignmentIcon from '@mui/icons-material/Assignment'; // Logs icon
-import CalendarIcon from '@mui/icons-material/CalendarToday'; // make sure to import the calendar icon
-import TimelineIcon from '@mui/icons-material/Timeline';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import CalendarIcon from '@mui/icons-material/CalendarToday'; // make sure to import the calendar icon
 import FaceIcon from '@mui/icons-material/Face';
-import ListAltIcon from '@mui/icons-material/ListAlt'; // Reports icon
 import SettingsIcon from '@mui/icons-material/Settings';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import { Box, Drawer, Grid, IconButton } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { TimePeriodContext } from '../../contexts/TimePeriodContext';
 import AudioTextField from '../AudioTextField/AudioTextField';
-import { useLocation } from 'react-router-dom';
 
 
 function BottomNav({ menuComponents }) {
@@ -25,11 +22,22 @@ function BottomNav({ menuComponents }) {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const handleStartDateChange = (date) => {
-        setCustomRange(dayjs(date), endDate);
+        if (dayjs(date).isAfter(endDate)) {
+            setCustomRange(dayjs(date), dayjs(date));
+        } else {
+            setCustomRange(dayjs(date), endDate);
+        }
     };
 
     const handleEndDateChange = (date) => {
-        setCustomRange(startDate, dayjs(date));
+        console.log('handleEndDateChange');
+        if (dayjs(date).isBefore(startDate)) {
+            console.log('before');
+            setCustomRange(dayjs(date), dayjs(date));
+        } else {
+            console.log('after');
+            setCustomRange(startDate, dayjs(date));
+        }
     };
 
     const toggleSettingsDrawer = (open) => () => {
