@@ -3,13 +3,14 @@ import CalendarIcon from '@mui/icons-material/CalendarToday'; // make sure to im
 import FaceIcon from '@mui/icons-material/Face';
 import SettingsIcon from '@mui/icons-material/Settings';
 import TimelineIcon from '@mui/icons-material/Timeline';
-import { Box, Drawer, Grid, IconButton } from '@mui/material';
+import { Box, Drawer, Grid, IconButton, Button } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import React, { useContext, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { TimePeriodContext } from '../../contexts/TimePeriodContext';
 import AudioTextField from '../AudioTextField/AudioTextField';
+import SingleDaySelector from '../SingleDaySelector/SingleDaySelector';
 
 
 function BottomNav({ menuComponents }) {
@@ -20,6 +21,12 @@ function BottomNav({ menuComponents }) {
     const [showTextField, setShowTextField] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false); // new state
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isSecondDatePicker, setSecondDatePicker] = useState(false);
+
+
+    const handleDayChange = (date) => {
+        setDay(date.valueOf());
+    }
 
     const handleStartDateChange = (date) => {
         if (dayjs(date).isAfter(endDate)) {
@@ -53,6 +60,9 @@ function BottomNav({ menuComponents }) {
         setShowDatePicker(false);
         setShowTextField((prev) => !prev);
     };
+
+    const handleDateChange = isSecondDatePicker ? handleStartDateChange : handleDayChange;
+    const handleSecondDateChange = handleEndDateChange;
 
     return (
         <Box
@@ -94,22 +104,37 @@ function BottomNav({ menuComponents }) {
                         transform: showDatePicker ? 'translateX(0)' : 'translateX(-100%)',
                     }}
                 >
-                    <DatePicker
-                        value={startDate}
-                        onChange={handleStartDateChange}
-                        localeAdapter={dayjs}
-                        renderInput={({ open }) => (
-                            <IconButton onClick={open}>Start Date</IconButton>
+                    <Grid container spacing={1} alignItems="center">
+                        <Grid item xs={4} sx={{ justifyContent: "center", display: "flex" }}>
+                            <DatePicker
+                                label={isSecondDatePicker ? "Start Date" : "Date"}
+                                value={startDate}
+                                onChange={handleDateChange}
+                                localeAdapter={dayjs}
+                                renderInput={({ open }) => (
+                                    <IconButton onClick={open}>{isSecondDatePicker ? "Start Date" : "Date"}</IconButton>
+                                )}
+                            />
+                        </Grid>
+                        {isSecondDatePicker && (
+                            <Grid item xs={4} sx={{ justifyContent: "center", display: "flex" }}>
+                                <DatePicker
+                                    label="End Date"
+                                    value={endDate}
+                                    onChange={handleSecondDateChange}
+                                    localeAdapter={dayjs}
+                                    renderInput={({ open }) => (
+                                        <IconButton onClick={open}>End Date</IconButton>
+                                    )}
+                                />
+                            </Grid>
                         )}
-                    />
-                    <DatePicker
-                        value={endDate}
-                        onChange={handleEndDateChange}
-                        localeAdapter={dayjs}
-                        renderInput={({ open }) => (
-                            <IconButton onClick={open}>End Date</IconButton>
-                        )}
-                    />
+                        <Grid item xs={4} sx={{ justifyContent: "center", display: "flex" }}>
+                            <Button onClick={() => setSecondDatePicker(!isSecondDatePicker)}>
+                                {isSecondDatePicker ? "Single Date" : "Range"}
+                            </Button>
+                        </Grid>
+                    </Grid>
                 </Box>
             )}
             <Box
