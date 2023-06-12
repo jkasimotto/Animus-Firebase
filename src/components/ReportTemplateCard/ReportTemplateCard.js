@@ -1,18 +1,17 @@
-import { collection, onSnapshot, query, where, limit } from "@firebase/firestore";
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import CircularProgress from '@mui/material/CircularProgress';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import Card from '@mui/material/Card';
+import { collection, deleteDoc, doc, limit, onSnapshot, query, updateDoc, where } from "@firebase/firestore";
+import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
+import EditIcon from '@mui/icons-material/Edit'; // Import Edit Icon
 import MaximizeIcon from '@mui/icons-material/Maximize';
 import MinimizeIcon from '@mui/icons-material/Minimize';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
+import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import { DataGrid } from '@mui/x-data-grid'; // Import DataGrid
 import { endOfDay, startOfDay } from 'date-fns';
 import dayjs from 'dayjs';
 import { httpsCallable } from 'firebase/functions';
@@ -20,12 +19,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../auth/auth';
 import { TimePeriodContext } from "../../contexts/TimePeriodContext";
 import { db, functions } from "../../firebaseConfig";
-import { TableHead } from "@mui/material";
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import { doc, updateDoc, deleteDoc } from "@firebase/firestore";
-import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
-import EditIcon from '@mui/icons-material/Edit'; // Import Edit Icon
+
 
 
 const ReportTemplateCard = ({ reportTemplate }) => {
@@ -57,35 +51,36 @@ const ReportTemplateCard = ({ reportTemplate }) => {
   };
 
   const fetchTableData = () => {
-  const reportDataCollectionRef = collection(db, "reports");
-  const reportDataQuery = query(
-    reportDataCollectionRef,
-    where("userId", "==", user.uid),
-    where("reportType", "==", reportTemplate.type),
-    where("date", ">=", startDate.toDate()),
-    where("date", "<=", endDate.toDate()),
-    limit(1)
-  );
-  console.log("Start date: ", startOfDay(startDate));
-  console.log("End date: ", endOfDay(endDate));
+    const reportDataCollectionRef = collection(db, "reports");
+    const reportDataQuery = query(
+      reportDataCollectionRef,
+      where("userId", "==", user.uid),
+      where("reportType", "==", reportTemplate.type),
+      where("date", ">=", startDate.toDate()),
+      where("date", "<=", endDate.toDate()),
+      limit(1)
+    );
+    console.log("Start date: ", startOfDay(startDate));
+    console.log("End date: ", endOfDay(endDate));
 
-  onSnapshot(reportDataQuery, (snapshot) => {
-    if (snapshot.size == 0) {
-      setTableData({ headers: [], rows: [] });
-      setTableId(null); // Set table ID to null if no data is found
-      return;
-    }
-    const data = snapshot.docs[0].data();
-    if (data.text) {
-      const tableData = parseMarkdownTable(data.text);
-      setTableData(tableData);
-      setTableId(snapshot.docs[0].id); // Set table ID to Firestore ID
-    } else {
-      setTableData({ headers: [], rows: [] });
-      setTableId(null); // Set table ID to null if no data is found
-    }
-  });
-};
+    onSnapshot(reportDataQuery, (snapshot) => {
+      if (snapshot.size == 0) {
+        setTableData({ headers: [], rows: [] });
+        setTableId(null); // Set table ID to null if no data is found
+        return;
+      }
+      const data = snapshot.docs[0].data();
+      if (data.text) {
+        console.log("Found data: ", data.text);
+        const tableData = parseMarkdownTable(data.text);
+        setTableData(tableData);
+        setTableId(snapshot.docs[0].id); // Set table ID to Firestore ID
+      } else {
+        setTableData({ headers: [], rows: [] });
+        setTableId(null); // Set table ID to null if no data is found
+      }
+    });
+  };
 
   function parseMarkdownTable(mdTable) {
     // Split the markdown table into lines
@@ -95,11 +90,11 @@ const ReportTemplateCard = ({ reportTemplate }) => {
     const relevantLines = [lines[0]].concat(lines.slice(2));
 
     // Split the first line into headers
-    const headers = relevantLines[0].split("|").map(cell => cell.trim());
+    const headers = relevantLines[0].split("|").slice(1, -1).map(cell => cell.trim());
 
     // Split each subsequent line into cells
     const rows = relevantLines.slice(1).map(line => {
-      const cells = line.split("|").map(cell => cell.trim());
+      const cells = line.split("|").slice(1, -1).map(cell => cell.trim());
       return headers.reduce((obj, header, index) => {
         obj[header] = cells[index];
         return obj;
@@ -108,6 +103,7 @@ const ReportTemplateCard = ({ reportTemplate }) => {
 
     return { headers, rows };
   }
+
 
 
   const refresh = () => {
@@ -136,6 +132,12 @@ const ReportTemplateCard = ({ reportTemplate }) => {
   }, [startDate, endDate]);
 
   console.log(tableData);
+
+  const rows = tableData.rows.map((row, index) => ({ id: index, ...row }));
+  const columns = tableData.headers.map(header => ({ field: header, headerName: header, flex: 1 }));
+
+  console.log(rows);
+  console.log(columns);
 
   return (
     <Card sx={{ maxWidth: 345 }}>
@@ -177,26 +179,14 @@ const ReportTemplateCard = ({ reportTemplate }) => {
           />
         }
         {showTable && (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {tableData.headers.map((header, index) => (
-                    <TableCell key={index}>{header}</TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tableData.rows.map((row, index) => (
-                  <TableRow key={index}>
-                    {Object.values(row).map((cell, i) => (
-                      <TableCell key={i}>{cell}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <div style={{ height: 400, width: '100%' }}> {/* Define the dimensions of your DataGrid */}
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              pageSize={5} // Define the number of rows rendered in the table
+              checkboxSelection
+            />
+          </div>
         )}
       </CardContent>
     </Card>
