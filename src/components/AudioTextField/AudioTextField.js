@@ -130,6 +130,8 @@ const AudioTextField = () => {
             variant="outlined"
             value={text}
             onChange={e => setText(e.target.value)}
+            multiline
+            rowsMax={4}
             InputProps={{
                 endAdornment: (
                     <InputAdornment position="end">

@@ -8,37 +8,38 @@ const getDaysAgo = (n) => {
 };
 
 export const TimePeriodProvider = ({ children }) => {
-  const [startDate, setStartDate] = useState(dayjs().toDate());
-  const [endDate, setEndDate] = useState(dayjs().toDate());
+  const [startDate, setStartDate] = useState(dayjs().startOf('day'));
+  const [endDate, setEndDate] = useState(dayjs().endOf('day'));
 
   const setDay = (date) => {
-    setStartDate(dayjs(date).startOf('day').toDate());
-    setEndDate(dayjs(date).endOf('day').toDate());
+      setStartDate(dayjs(date).startOf('day'));
+      setEndDate(dayjs(date).endOf('day'));
   };
 
   const setPastNDays = (n) => {
-    setStartDate(getDaysAgo(n));
-    setEndDate(dayjs().toDate());
+      setStartDate(getDaysAgo(n));
+      setEndDate(dayjs());
   };
 
   const setCustomRange = (start, end) => {
-    setStartDate(dayjs(start).toDate());
-    setEndDate(dayjs(end).toDate());
+      setStartDate(dayjs(start));
+      setEndDate(dayjs(end));
   };
 
   const value = {
-    startDate,
-    endDate,
-    setDay,
-    setPastNDays,
-    setCustomRange,
+      startDate,
+      endDate,
+      setDay,
+      setPastNDays,
+      setCustomRange,
   };
 
   return (
-    <TimePeriodContext.Provider value={value}>
-      {children}
-    </TimePeriodContext.Provider>
+      <TimePeriodContext.Provider value={value}>
+          {children}
+      </TimePeriodContext.Provider>
   );
 };
+
 
 export default TimePeriodProvider;

@@ -1,25 +1,49 @@
-import React, { useState, useContext } from 'react';
-import { Box, TextField, IconButton, Grid } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
+import AssignmentIcon from '@mui/icons-material/Assignment'; // Logs icon
+import CalendarIcon from '@mui/icons-material/CalendarToday'; // make sure to import the calendar icon
+import TimelineIcon from '@mui/icons-material/Timeline';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import FaceIcon from '@mui/icons-material/Face';
+import ListAltIcon from '@mui/icons-material/ListAlt'; // Reports icon
 import SettingsIcon from '@mui/icons-material/Settings';
+import { Box, Drawer, Grid, IconButton } from '@mui/material';
+import { DatePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import React, { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { TimePeriodContext } from '../../contexts/TimePeriodContext';
 import AudioTextField from '../AudioTextField/AudioTextField';
+import { useLocation } from 'react-router-dom';
 
-function BottomNav() {
-    const { startDate, endDate, setDay, setCustomRange } = useContext(
-        TimePeriodContext
-    );
+
+function BottomNav({ menuComponents }) {
+    const { startDate, endDate, setDay, setCustomRange } = useContext(TimePeriodContext);
+
+    const location = useLocation();
 
     const [showTextField, setShowTextField] = useState(false);
+    const [showDatePicker, setShowDatePicker] = useState(false); // new state
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const handleStartDateChange = (date) => {
-        setDay(date);
+        setCustomRange(dayjs(date), endDate);
     };
 
     const handleEndDateChange = (date) => {
-        setCustomRange(startDate, date);
+        setCustomRange(startDate, dayjs(date));
+    };
+
+    const toggleSettingsDrawer = (open) => () => {
+        setIsSettingsOpen(open);
+    };
+
+    const handleCalendarClick = () => {
+        setShowTextField(false);
+        setShowDatePicker((prev) => !prev);
+    };
+
+    const handleFaceClick = () => {
+        setShowDatePicker(false);
+        setShowTextField((prev) => !prev);
     };
 
     return (
@@ -48,7 +72,36 @@ function BottomNav() {
                     }}
                 >
                     <AudioTextField />
-                    {/* <TextField label="Text" fullWidth /> */}
+                </Box>
+            )}
+            {showDatePicker && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        width: '100%',
+                        justifyContent: 'center',
+                        padding: '1em',
+                        borderTop: '1px solid #ddd',
+                        transition: 'transform 0.3s ease-in-out',
+                        transform: showDatePicker ? 'translateX(0)' : 'translateX(-100%)',
+                    }}
+                >
+                    <DatePicker
+                        value={startDate}
+                        onChange={handleStartDateChange}
+                        localeAdapter={dayjs}
+                        renderInput={({ open }) => (
+                            <IconButton onClick={open}>Start Date</IconButton>
+                        )}
+                    />
+                    <DatePicker
+                        value={endDate}
+                        onChange={handleEndDateChange}
+                        localeAdapter={dayjs}
+                        renderInput={({ open }) => (
+                            <IconButton onClick={open}>End Date</IconButton>
+                        )}
+                    />
                 </Box>
             )}
             <Box
@@ -60,38 +113,54 @@ function BottomNav() {
                 }}
             >
                 <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={1}>
-                        <IconButton onClick={() => setShowTextField((prev) => !prev)}>
+                    <Grid item xs={1}></Grid>
+                    <Grid item xs={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Link to="/">
+                            <IconButton style={location.pathname === "/" ? { color: "blue" } : {}}>
+                                <BarChartIcon />
+                            </IconButton>
+                        </Link>
+                    </Grid>
+                    <Grid item xs={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Link to="/logs">
+                            <IconButton style={location.pathname === "/logs" ? { color: "blue" } : {}}>
+                                <TimelineIcon />
+                            </IconButton>
+                        </Link>
+                    </Grid>
+                    <Grid item xs={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <IconButton onClick={handleCalendarClick}>
+                            <CalendarIcon />
+                        </IconButton>
+                    </Grid>
+                    <Grid item xs={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <IconButton onClick={handleFaceClick}>
                             <FaceIcon />
                         </IconButton>
                     </Grid>
-                    <Grid item xs={5}>
-                        <DatePicker
-                            date={startDate}
-                            onChange={handleStartDateChange}
-                            localeAdapter={dayjs}
-                            renderInput={({ open }) => (
-                                <IconButton onClick={open}>Start Date</IconButton>
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={5}>
-                        <DatePicker
-                            date={endDate}
-                            onChange={handleEndDateChange}
-                            localeAdapter={dayjs}
-                            renderInput={({ open }) => (
-                                <IconButton onClick={open}>End Date</IconButton>
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={1}>
-                        <IconButton>
+                    <Grid item xs={2} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <IconButton onClick={toggleSettingsDrawer(true)}>
                             <SettingsIcon />
                         </IconButton>
+                        <Drawer
+                            anchor="right"
+                            open={isSettingsOpen}
+                            onClose={toggleSettingsDrawer(false)}
+                        >
+                            <Box
+                                sx={{ width: 250 }}
+                                role="presentation"
+                                onClick={toggleSettingsDrawer(false)}
+                                onKeyDown={toggleSettingsDrawer(false)}
+                            >
+                                {menuComponents.map((Component, index) => <Component key={index} />)}
+                            </Box>
+                        </Drawer>
                     </Grid>
+                    <Grid item xs={1}></Grid>
                 </Grid>
             </Box>
+
         </Box>
     );
 }

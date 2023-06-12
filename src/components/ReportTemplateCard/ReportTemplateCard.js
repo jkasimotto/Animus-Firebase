@@ -53,8 +53,8 @@ const ReportTemplateCard = ({ reportTemplate }) => {
     reportDataCollectionRef,
     where("userId", "==", user.uid),
     where("reportType", "==", reportTemplate.type),
-    where("date", ">=", startOfDay(endDate)),
-    where("date", "<=", endOfDay(endDate)),
+    where("date", ">=", startDate.toDate()),
+    where("date", "<=", endDate.toDate()),
     limit(1)
   );
   console.log("Start date: ", startOfDay(startDate));

@@ -29,21 +29,7 @@ const withLayout = (PageComponent, options) => {
           <PageComponent {...props} />
         </Box>
         <Divider />
-        <Box>
-          <Grid container spacing={2}>
-            {menuComponents.map((Component, index) => (
-              <Grid item xs={6} sm={6} md={4} lg={3} key={index}>
-                <Box sx={{ width: '100%', height: '100%' }}>
-                  <Component />
-                </Box>
-              </Grid>
-            ))}
-            <Grid item xs={6} sm={6} md={4} lg={3}>
-              <SingleDaySelector selectedDay={selectedDay} setSelectedDay={setSelectedDay} />
-            </Grid>
-          </Grid>
-        </Box>
-        <BottomNav />
+        <BottomNav menuComponents={menuComponents} />
       </Box>
     );
   };

@@ -29,8 +29,8 @@ const MediaTimelinePage = () => {
       return;
     }
 
-    const start = startOfDay(startDate);
-    const end = endOfDay(endDate);
+    const start = startDate.toDate();
+    const end = endDate.toDate();
     const mediaCollectionRef = collection(db, "media");
     const mediaQuery = query(
       mediaCollectionRef,
