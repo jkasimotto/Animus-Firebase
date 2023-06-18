@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc, limit, onSnapshot, query, updateDoc, where } from "@firebase/firestore";
+import { collection, deleteDoc, doc, limit, onSnapshot, query, updateDoc, where, orderBy } from "@firebase/firestore";
 import DeleteIcon from '@mui/icons-material/Delete'; // Import Delete Icon
 import EditIcon from '@mui/icons-material/Edit'; // Import Edit Icon
 import MaximizeIcon from '@mui/icons-material/Maximize';
@@ -51,6 +51,8 @@ const ReportTemplateCard = ({ reportTemplate }) => {
   };
 
   const fetchTableData = () => {
+    console.log("Start date: ", startDate.toDate());
+    console.log("End date: ", endDate.toDate());
     const reportDataCollectionRef = collection(db, "reports");
     const reportDataQuery = query(
       reportDataCollectionRef,
@@ -58,12 +60,13 @@ const ReportTemplateCard = ({ reportTemplate }) => {
       where("reportType", "==", reportTemplate.type),
       where("date", ">=", startDate.toDate()),
       where("date", "<=", endDate.toDate()),
+      orderBy("date", "desc"),
+      orderBy("createdAt", "desc"),
       limit(1)
     );
-    console.log("Start date: ", startOfDay(startDate));
-    console.log("End date: ", endOfDay(endDate));
 
     onSnapshot(reportDataQuery, (snapshot) => {
+      console.log("Snapshot", snapshot.size);
       if (snapshot.size == 0) {
         setTableData({ headers: [], rows: [] });
         setTableId(null); // Set table ID to null if no data is found

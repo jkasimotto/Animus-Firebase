@@ -1,10 +1,10 @@
 // src/App.js
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./auth/auth";
 import Layout from "./components/Layout/Layout";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import TimePeriodProvider from "./contexts/TimePeriodContext";
 
 const App = () => {

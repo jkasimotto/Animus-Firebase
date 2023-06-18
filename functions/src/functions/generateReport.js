@@ -99,11 +99,17 @@ module.exports = functions
             // Get the response text
             const responseText = response.data.choices[0].message.content;
 
+            functions.logger.info(responseText);
+
             // Get the substring of responseText starting from the first occurrence of '|'
             const strippedText = responseText.substring(responseText.indexOf('|'));
 
+            functions.logger.info(strippedText);
+
             // Get the substring of strippedText from the beginning to the last occurrence of '|' plus one
             const finalText = strippedText.substring(0, strippedText.lastIndexOf('|') + 1);
+
+            functions.logger.info(finalText);
 
             // If a report ID was provided, update the existing report document
             if (reportId) {
